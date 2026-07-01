@@ -1,0 +1,2091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planning Hub</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231A56A0'/><text x='16' y='23' font-family='system-ui,sans-serif' font-size='20' font-weight='700' text-anchor='middle' fill='white'>P</text></svg>">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #F2F1EE;
+  --surface: #FFFFFF;
+  --surface-2: #F7F6F3;
+  --border: rgba(0,0,0,0.09);
+  --border-md: rgba(0,0,0,0.15);
+  --text: #1C1B18;
+  --text-2: #5A5955;
+  --text-3: #9A9893;
+  --accent: #1A56A0;
+  --accent-light: #E8F0FB;
+  --red: #D94040;
+  --red-bg: #FDF0F0;
+  --red-text: #7A1F1F;
+  --orange: #C07820;
+  --orange-bg: #FDF4E7;
+  --orange-text: #5C3800;
+  --green: #3A8A3A;
+  --green-bg: #EDF6ED;
+  --green-text: #1A4A1A;
+  --purple: #7C6FCD;
+  --nav-w: 220px;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; display: flex; min-height: 100vh; }
+
+/* NAV */
+nav { width: var(--nav-w); min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; display: flex; flex-direction: column; z-index: 100; }
+.nav-header { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
+.nav-header .title { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: 0.01em; }
+.nav-header .subtitle { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.nav-section { padding: 8px 0; }
+.nav-group-label { padding: 10px 20px 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); }
+.nav-group-label--spaced { margin-top: 8px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 7px 20px 7px 28px; font-size: 12px; color: var(--text-2); cursor: pointer; }
+.nav-item:hover { background: var(--surface-2); color: var(--text); }
+.nav-item.active { color: var(--accent); background: var(--accent-light); font-weight: 500; }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
+.nav-dot.red { background: var(--red); }
+.nav-dot.green { background: var(--green); }
+.nav-dot.orange { background: var(--orange); }
+.search-input { width:100%; padding:6px 10px; border:1px solid var(--border-md); border-radius:var(--radius-sm); font-size:12px; font-family:inherit; background:var(--surface); color:var(--text); outline:none; margin-bottom:6px; }
+.search-input:focus { border-color:var(--accent); }
+.nav-bottom { margin-top: auto; padding: 12px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+.nav-btn { background: none; border: 1px solid var(--border-md); border-radius: var(--radius-sm); padding: 6px 10px; font-size: 11px; color: var(--text-2); cursor: pointer; font-family: inherit; text-align: left; width: 100%; }
+.nav-btn:hover { background: var(--surface-2); }
+
+/* MAIN */
+main { margin-left: var(--nav-w); flex: 1; padding: 28px 32px; max-width: 1080px; }
+
+/* HEADER */
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+.page-header h1 { font-size: 18px; font-weight: 600; }
+.page-header p { font-size: 12px; color: var(--text-3); margin-top: 3px; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+
+/* STAT ROW */
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.stat-card.red-accent { border-left: 3px solid var(--red); }
+.stat-card.green-accent { border-left: 3px solid var(--green); }
+.stat-card.orange-accent { border-left: 3px solid var(--orange); }
+.stat-card.blue-accent { border-left: 3px solid var(--accent); }
+.stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); margin-bottom: 4px; }
+.stat-value { font-size: 24px; font-weight: 600; line-height: 1; }
+.stat-sub { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+
+/* SECTION */
+.section { margin-bottom: 28px; }
+.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.section-head h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-2); }
+.section-head p { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+
+/* PROJECT CARDS */
+.project-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+.project-card-header { padding: 14px 18px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; cursor: pointer; }
+.project-card-header:hover { background: var(--surface-2); }
+.proj-left { flex: 1; min-width: 0; }
+.proj-client { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); margin-bottom: 2px; }
+.proj-name { font-size: 15px; font-weight: 600; }
+.proj-brief { font-size: 12px; color: var(--text-2); margin-top: 3px; }
+.proj-meta { display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap; }
+.proj-meta-item { font-size: 11px; color: var(--text-3); }
+.proj-meta-item strong { color: var(--text-2); font-weight: 500; }
+.proj-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.chevron { font-size: 12px; color: var(--text-3); transition: transform 0.18s; display: inline-block; }
+.chevron.open { transform: rotate(180deg); }
+
+/* ROLES TABLE */
+.roles-panel { border-top: 1px solid var(--border); display: none; }
+.roles-panel.open { display: block; }
+.roles-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.roles-table th { text-align: left; padding: 8px 14px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); font-weight: 500; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+.roles-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.roles-table tr:last-child td { border-bottom: none; }
+.roles-table tr:hover td { background: #FAFAF8; }
+.roles-panel-footer { padding: 10px 14px; border-top: 1px solid var(--border); background: var(--surface-2); }
+
+/* BADGES */
+.badge { display: inline-flex; align-items: center; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+.badge-open { background: var(--red-bg); color: var(--red-text); }
+.badge-discussion { background: var(--orange-bg); color: var(--orange-text); }
+.badge-confirmed { background: var(--green-bg); color: var(--green-text); }
+.badge-offer { background: var(--accent-light); color: var(--accent); }
+
+/* OPEN ROLES BLOCK */
+.open-roles-list { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.open-role-row { display: flex; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--border); gap: 12px; }
+.open-role-row:last-child { border-bottom: none; }
+.open-role-row:hover { background: var(--surface-2); }
+.or-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.or-dot.critical { background: var(--red); }
+.or-dot.discussion { background: var(--orange); }
+.or-role { font-size: 13px; font-weight: 500; flex: 1; }
+.or-project { font-size: 12px; color: var(--text-3); }
+.or-client { font-size: 11px; color: var(--text-3); background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 7px; }
+
+/* PRIORITIES + NOTES */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+.block h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-2); margin-bottom: 12px; }
+.priority-list { display: flex; flex-direction: column; gap: 6px; }
+.priority-item { display: flex; align-items: center; gap: 10px; }
+.priority-num { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.priority-input { flex: 1; border: none; outline: none; font-size: 13px; font-family: inherit; color: var(--text); background: transparent; border-bottom: 1px solid var(--border); padding: 4px 0; }
+.priority-input:focus { border-bottom-color: var(--accent); }
+.priority-input::placeholder { color: var(--text-3); }
+.notes-textarea { width: 100%; border: none; outline: none; font-size: 13px; font-family: inherit; color: var(--text); background: transparent; resize: none; min-height: 120px; line-height: 1.6; }
+.notes-textarea::placeholder { color: var(--text-3); }
+/* BUTTONS */
+.btn { background: none; border: 1px solid var(--border-md); border-radius: var(--radius-sm); padding: 6px 12px; font-size: 12px; color: var(--text-2); cursor: pointer; font-family: inherit; }
+.btn:hover { background: var(--surface-2); }
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 500; }
+.btn-primary:hover { opacity: 0.9; background: var(--accent); }
+.btn-danger { color: var(--red-text); border-color: var(--red); }
+.btn-danger:hover { background: var(--red-bg); }
+.btn-icon { background: none; border: 1px solid transparent; cursor: pointer; padding: 4px 7px; color: var(--text-3); font-size: 14px; border-radius: var(--radius-sm); transition: background 0.1s, border-color 0.1s, color 0.1s; }
+.btn-icon:hover { background: var(--surface-2); border-color: var(--border-md); color: var(--text); }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 500; display: none; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: var(--radius); padding: 24px; width: 500px; max-width: 95vw; max-height: 88vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+.modal h3 { font-size: 15px; font-weight: 600; margin-bottom: 18px; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border); }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 11px; color: var(--text-2); margin-bottom: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.field input, .field select, .field textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border-md); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; background: var(--surface); color: var(--text); outline: none; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+.field textarea { resize: vertical; min-height: 60px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* TALENT PICKER */
+.talent-picker { max-height: 220px; overflow-y: auto; border: 1px solid var(--border-md); border-radius: var(--radius-sm); margin-top: 4px; }
+.talent-option { display: flex; align-items: center; gap: 10px; padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--border); }
+.talent-option:last-child { border-bottom: none; }
+.talent-option:hover { background: var(--surface-2); }
+.talent-option input[type=checkbox] { flex-shrink: 0; }
+.talent-option-name { font-size: 13px; font-weight: 500; }
+.talent-option-role { font-size: 11px; color: var(--text-3); }
+
+/* MISC */
+.muted { color: var(--text-3); font-style: italic; }
+.empty-state { text-align: center; padding: 28px; color: var(--text-3); font-size: 13px; }
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--text); color: #fff; padding: 9px 16px; border-radius: var(--radius-sm); font-size: 12px; z-index: 2000; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+.tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 20px; background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); margin: 1px; }
+
+/* TALENTS PAGE */
+.talent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.talent-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.talent-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.talent-name { font-size: 14px; font-weight: 600; }
+.talent-role-label { font-size: 11px; color: var(--text-2); margin-bottom: 8px; }
+.avail-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* QUICK ASSIGN */
+.assign-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.assign-col { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.assign-col-head { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--surface-2); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-2); display: flex; align-items: center; gap: 8px; }
+.assign-role-row { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+.assign-role-row:last-child { border-bottom: none; }
+.assign-role-row:hover { background: var(--accent-light); }
+.assign-role-row.selected { background: var(--accent-light); border-left: 3px solid var(--accent); }
+.assign-role-name { font-size: 13px; font-weight: 600; }
+.assign-role-project { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.assign-role-status { font-size: 11px; margin-top: 4px; }
+.assign-talent-row { padding: 10px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.assign-talent-row:last-child { border-bottom: none; }
+.assign-talent-row.busy { opacity: 0.5; }
+.assign-talent-info { flex: 1; }
+.assign-talent-name { font-size: 13px; font-weight: 500; }
+.assign-talent-role { font-size: 11px; color: var(--text-3); }
+.assign-btn { background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); padding: 5px 12px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.assign-btn:hover { opacity: 0.88; }
+.assign-btn.remove { background: none; border: 1px solid var(--border-md); color: var(--text-2); }
+.assign-btn.remove:hover { background: var(--red-bg); border-color: var(--red); color: var(--red-text); }
+.assign-hint { padding: 32px 16px; text-align: center; color: var(--text-3); font-size: 13px; }
+
+/* GANTT */
+.gantt-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.gantt-zoom-btn { background: none; border: 1px solid var(--border-md); border-radius: var(--radius-sm); padding: 5px 12px; font-size: 12px; color: var(--text-2); cursor: pointer; font-family: inherit; }
+.gantt-zoom-btn:hover { background: var(--surface-2); }
+.gantt-zoom-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 500; }
+.gantt-legend { display: flex; gap: 16px; margin-left: auto; flex-wrap: wrap; }
+.gantt-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-2); }
+.gantt-legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.gantt-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.gantt-table { border-collapse: collapse; font-size: 12px; min-width: 100%; }
+.gantt-table th { background: var(--surface-2); padding: 7px 8px; text-align: center; border: 1px solid var(--border); color: var(--text-3); font-weight: 400; font-size: 11px; min-width: 48px; white-space: nowrap; }
+.gantt-table th.g-label { text-align: left; min-width: 180px; position: sticky; left: 0; background: var(--surface-2); z-index: 2; padding-left: 14px; }
+.gantt-table td { border: 1px solid var(--border); padding: 0; height: 34px; }
+.gantt-table td.g-label { padding: 0 14px; color: var(--text-2); background: var(--surface); position: sticky; left: 0; z-index: 1; min-width: 180px; cursor: pointer; white-space: nowrap; }
+.gantt-table td.g-label:hover { background: var(--surface-2); }
+.gantt-table tr.g-proj td { background: #F7F6F3; }
+.gantt-table tr.g-proj td.g-label { font-weight: 600; color: var(--text); font-size: 13px; }
+.gantt-table tr.g-role td.g-label { padding-left: 28px; font-size: 12px; cursor: default; }
+.gantt-table tr.g-role td.g-label:hover { background: var(--surface); }
+.g-bar { height: 18px; border-radius: 3px; margin: 7px 3px; }
+.g-bar-wrap { position: relative; height: 18px; margin: 7px 3px; border-radius: 3px; overflow: hidden; }
+.g-bar-wrap .g-bar { margin: 0; height: 100%; border-radius: 0; }
+.g-bar-stripe { position: absolute; inset: 0; border-radius: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(0,0,0,0) 0px,
+    rgba(0,0,0,0) 4px,
+    rgba(255,255,255,0.55) 4px,
+    rgba(255,255,255,0.55) 7px
+  );
+}
+
+.badge-coverage { background:#FFF0F0; color:#C0392B; border:0.5px solid #F5C6C6; }
+.proj-type-badge { display:inline-block; font-size:10px; padding:2px 8px; border-radius:20px; background:var(--purple-bg,#EEEDFE); color:var(--purple-text,#3C3489); font-weight:500; margin-right:6px; }
+.proj-status-badge { display:inline-block; font-size:10px; padding:2px 8px; border-radius:20px; font-weight:500; }
+.proj-status-incoming { background:#FDF8E1; color:#7A5C00; border:1px solid #F0D060; }
+.proj-status-active   { background:var(--green-bg); color:var(--green-text); border:1px solid #A8D8A8; }
+.proj-status-onhold   { background:#FDF0F0; color:#7A1F1F; border:1px solid #F5C0C0; }
+.proj-status-delivered{ background:var(--accent-light); color:var(--accent); border:1px solid #B0CCF0; }
+.proj-deliverable-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+.proj-deliverable-tag { font-size:10px; padding:2px 7px; border-radius:20px; background:var(--surface-2); color:var(--text-3); border:0.5px solid var(--border); }
+.coverage-badge { display:inline-flex; align-items:center; gap:4px; font-size:10px; padding:2px 8px; border-radius:20px; background:#FFF0F0; color:#C0392B; border:0.5px solid #F5C6C6; font-weight:500; }
+.deliverable-picker { border:0.5px solid var(--border-md); border-radius:var(--radius-sm); max-height:200px; overflow-y:auto; padding:6px; background:var(--surface); }
+.deliverable-picker-cat { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-3); padding:5px 2px 2px; margin-top:3px; }
+.deliverable-picker-cat:first-child { margin-top:0; }
+.deliverable-picker-item { display:flex; align-items:center; gap:8px; padding:3px 4px; border-radius:4px; cursor:pointer; font-size:12px; color:var(--text); }
+.deliverable-picker-item:hover { background:var(--surface-2); }
+.deliverable-picker-item input[type=checkbox] { accent-color:var(--accent); width:13px; height:13px; flex-shrink:0; cursor:pointer; }
+
+/* SKILLS PICKER */
+.skills-picker-cat { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); padding: 6px 2px 3px; margin-top: 4px; }
+.skills-picker-cat:first-child { margin-top: 0; }
+.skills-picker-item { display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 4px; cursor: pointer; font-size: 12px; color: var(--text); }
+.skills-picker-item:hover { background: var(--surface-2); }
+.skills-picker-item input[type=checkbox] { accent-color: var(--accent); width: 13px; height: 13px; flex-shrink: 0; cursor: pointer; }
+
+/* SKILLS */
+.skills-gap-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 0.5px solid var(--border); gap: 10px; }
+.skills-gap-row:last-child { border-bottom: none; }
+.skills-gap-name { font-size: 12px; font-weight: 500; color: var(--text); width: 180px; flex-shrink: 0; }
+.skills-gap-bar-wrap { flex: 1; background: var(--surface-2); border-radius: 4px; height: 7px; overflow: hidden; }
+.skills-gap-bar { height: 100%; border-radius: 4px; transition: width 0.3s; }
+.skills-gap-count { font-size: 11px; color: var(--text-3); width: 50px; text-align: right; flex-shrink: 0; }
+.skills-gap-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; width: 52px; text-align: center; }
+.skills-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.skills-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
+.skills-card.gap { border-color: var(--red); background: #FFF5F5; }
+.skills-card.low { border-color: var(--orange); background: #FFFBF5; }
+.skills-card-name { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.skills-card-count { font-size: 11px; color: var(--text-3); margin-bottom: 8px; }
+.skills-avatars { display: flex; flex-wrap: wrap; gap: 3px; }
+.skills-av { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; flex-shrink: 0; cursor: default; }
+.skills-filter { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.skills-filter-btn { background: none; border: 0.5px solid var(--border-md); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--text-2); cursor: pointer; font-family: inherit; }
+.skills-filter-btn:hover { background: var(--surface-2); }
+.skills-filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.skills-section-title { font-size: 13px; font-weight: 500; color: var(--text); margin: 24px 0 12px; }
+
+.pr-selected { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.pr-card { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.pr-card-role { font-size: 13px; font-weight: 500; }
+.pr-card-meta { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.pr-remove { background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 16px; padding: 2px 5px; border-radius: 4px; line-height: 1; flex-shrink: 0; }
+.pr-remove:hover { color: var(--red); background: var(--red-bg); }
+.pr-divider { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+.pr-available-label { font-size: 11px; color: var(--text-3); margin-bottom: 8px; }
+.pr-available { display: flex; flex-direction: column; gap: 3px; }
+.pr-option { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 6px; border: 1px solid transparent; }
+.pr-option:hover { background: var(--surface-2); border-color: var(--border); }
+.pr-option-role { font-size: 12px; font-weight: 500; flex: 1; }
+.pr-option-meta { font-size: 11px; color: var(--text-3); }
+.pr-add-btn { background: none; border: 1px solid var(--border-md); border-radius: 20px; padding: 2px 10px; font-size: 11px; color: var(--text-2); cursor: pointer; font-family: inherit; white-space: nowrap; flex-shrink: 0; }
+.pr-add-btn:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+
+/* ARCHIVE */
+.archive-entry { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; overflow: hidden; }
+.archive-entry-header { padding: 12px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.archive-entry-header:hover { background: var(--surface-2); }
+.archive-date { font-size: 13px; font-weight: 600; flex: 1; }
+.archive-preview { font-size: 11px; color: var(--text-3); flex: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.archive-body { border-top: 1px solid var(--border); padding: 16px 18px; display: none; }
+.archive-body.open { display: block; }
+.archive-section { margin-bottom: 14px; }
+.archive-section:last-child { margin-bottom: 0; }
+.archive-section-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); margin-bottom: 6px; }
+.archive-section-content { font-size: 13px; color: var(--text-2); white-space: pre-wrap; line-height: 1.6; }
+.archive-open-role { display: inline-block; font-size: 11px; background: var(--red-bg); color: var(--red-text); border-radius: 20px; padding: 2px 8px; margin: 2px; }
+
+/* TIME OFF */
+.timeoff-list { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.timeoff-row { display: flex; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--border); gap: 12px; }
+.timeoff-row:last-child { border-bottom: none; }
+.timeoff-row:hover { background: var(--surface-2); }
+.timeoff-name { font-size: 13px; font-weight: 500; flex: 1; }
+.timeoff-dates { font-size: 12px; color: var(--text-3); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-header">
+    <div class="title">Planning Hub</div>
+    <div class="subtitle">Operational dashboard</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-group-label">Main items</div>
+    <div class="nav-item" onclick="showPage('priorities',this)"><span class="nav-dot"></span> Priorities & notes</div>
+    <div class="nav-item" onclick="showPage('planning',this)"><span class="nav-dot" style="background:var(--accent);opacity:0.7;"></span> Planning</div>
+
+    <div class="nav-group-label nav-group-label--spaced">Projects</div>
+    <div class="nav-item active" onclick="showPage('projects',this)"><span class="nav-dot red" id="nav-open-dot"></span> Active projects <span id="nav-open-count" style="margin-left:auto;font-size:10px;background:var(--red-bg);color:var(--red-text);padding:1px 6px;border-radius:10px;"></span></div>
+    <div class="nav-item" onclick="showPage('openroles',this)"><span class="nav-dot"></span> Open roles</div>
+    <div class="nav-item" onclick="showPage('assign',this)"><span class="nav-dot"></span> Quick assign</div>
+
+    <div class="nav-group-label nav-group-label--spaced">Talents</div>
+    <div class="nav-item" onclick="showPage('talents',this)"><span class="nav-dot"></span> Roster</div>
+    <div class="nav-item" onclick="showPage('skills',this)"><span class="nav-dot" style="background:var(--purple);"></span> Skills</div>
+    <div class="nav-item" onclick="showPage('timeoff',this)"><span class="nav-dot" style="background:var(--orange);"></span> Time off</div>
+  </div>
+  <div class="nav-bottom">
+    <button class="nav-btn" onclick="exportData()">⬇ Export backup</button>
+    <label class="nav-btn" style="cursor:pointer;">⬆ Import backup<input type="file" accept=".json" onchange="importData(event)" style="display:none;"></label>
+  </div>
+</nav>
+
+<main>
+
+<!-- PROJECTS PAGE -->
+<div id="page-projects" class="page active">
+  <div class="page-header">
+    <div><h1>Active projects</h1><p id="projects-subtitle"></p></div>
+    <button class="btn btn-primary" onclick="openProjectModal()">+ Add project</button>
+  </div>
+  <div class="stat-row" id="stat-row"></div>
+  <div id="projects-list"></div>
+</div>
+
+<!-- OPEN ROLES PAGE -->
+<div id="page-openroles" class="page">
+  <div class="page-header">
+    <div><h1>Open roles</h1><p>Roles that still need someone</p></div>
+  </div>
+  <div id="open-roles-list"></div>
+</div>
+
+<!-- QUICK ASSIGN PAGE -->
+<div id="page-assign" class="page">
+  <div class="page-header">
+    <div><h1>Quick assign</h1><p>Select an open role, then click a talent to assign them</p></div>
+  </div>
+  <div class="assign-layout">
+    <div class="assign-col">
+      <div class="assign-col-head">
+        <span>Open roles</span>
+        <span id="assign-open-count"></span>
+      </div>
+      <div style="padding:8px 10px;border-bottom:0.5px solid var(--border);">
+        <input type="text" id="assign-roles-search" placeholder="Search project or role..." style="width:100%;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--radius-sm);padding:5px 8px;background:var(--surface);color:var(--text);outline:none;font-family:inherit;" oninput="renderAssignRoles()">
+      </div>
+      <div id="assign-roles-list"></div>
+    </div>
+    <div class="assign-col">
+      <div class="assign-col-head">
+        <span>Talents</span>
+        <input type="text" id="assign-search" placeholder="Search name or role..." style="margin-left:auto;font-size:12px;border:1px solid var(--border-md);border-radius:var(--radius-sm);padding:4px 8px;background:var(--surface);color:var(--text);outline:none;font-family:inherit;width:180px;" oninput="renderAssignTalents()">
+      </div>
+      <div id="assign-talents-list"><div class="assign-hint">← Select a role to assign talent</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TALENTS PAGE -->
+<div id="page-talents" class="page">
+  <div class="page-header">
+    <div><h1>Roster</h1><p>Your freelancers and contractors</p></div>
+    <button class="btn btn-primary" onclick="openTalentModal()">+ Add talent</button>
+  </div>
+  <div class="talent-grid" id="talent-grid"></div>
+</div>
+
+<!-- SKILLS PAGE -->
+<div id="page-skills" class="page">
+  <div class="page-header">
+    <div><h1>Skills</h1><p>Coverage overview across the talent roster</p></div>
+  </div>
+  <div class="skills-filter" id="skills-filter"></div>
+  <div id="skills-container"></div>
+</div>
+
+<!-- TIME OFF PAGE -->
+<div id="page-timeoff" class="page">
+  <div class="page-header">
+    <div><h1>Time off</h1><p>Track when people are unavailable</p></div>
+    <button class="btn btn-primary" onclick="openTimeoffModal()">+ Add time off</button>
+  </div>
+  <div id="timeoff-list"></div>
+</div>
+
+<!-- PRIORITIES PAGE -->
+<div id="page-priorities" class="page">
+  <div class="page-header">
+    <div><h1>Priorities & notes</h1><p>Top of mind for this meeting</p></div>
+    <div class="header-actions">
+      <input type="date" id="session-date" style="font-size:12px;border:1px solid var(--border-md);border-radius:var(--radius-sm);padding:5px 8px;background:var(--surface);color:var(--text);font-family:inherit;outline:none;" onchange="onSessionDateChange(this.value)">
+      <button class="btn" onclick="archiveSession()">Archive session</button>
+      <button class="btn" onclick="copyRecap()">Copy recap</button>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="block">
+      <h3>Top priorities</h3>
+      <div class="priority-list">
+        <div class="priority-item"><span class="priority-num">1</span><input class="priority-input" id="p1" type="text" placeholder="Priority one..." oninput="savePriorities()"></div>
+        <div class="priority-item"><span class="priority-num">2</span><input class="priority-input" id="p2" type="text" placeholder="Priority two..." oninput="savePriorities()"></div>
+        <div class="priority-item"><span class="priority-num">3</span><input class="priority-input" id="p3" type="text" placeholder="Priority three..." oninput="savePriorities()"></div>
+      </div>
+    </div>
+    <div class="block">
+      <h3>Meeting notes</h3>
+      <textarea class="notes-textarea" id="meeting-notes" placeholder="Type notes here during the meeting..." oninput="saveNotes()"></textarea>
+    </div>
+  </div>
+  <div style="margin-top:16px;" class="block">
+    <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="togglePriorityRoles()">
+      <h3 style="margin-bottom:0;">Priority roles</h3>
+      <span id="pr-chevron" style="font-size:12px;color:var(--text-3);transition:transform 0.18s;display:inline-block;">▾</span>
+    </div>
+    <div id="priority-roles-panel" style="display:none;margin-top:12px;">
+      <p style="font-size:12px;color:var(--text-3);margin-bottom:12px;">Roles to focus on this meeting</p>
+      <div id="priority-roles-list"></div>
+    </div>
+  </div>
+  <div style="margin-top:16px;" class="block">
+    <h3>Decisions & actions</h3>
+    <textarea class="notes-textarea" id="decisions-notes" placeholder="Decisions made, actions to follow up on..." oninput="saveNotes()" style="min-height:100px;"></textarea>
+  </div>
+
+  <div style="margin-top:32px;">
+    <div class="section-head"><h2>Past sessions</h2></div>
+    <div id="archive-list"></div>
+  </div>
+</div>
+
+<!-- PLANNING PAGE -->
+<div id="page-planning" class="page">
+  <div class="page-header">
+    <div><h1>Planning</h1><p>Timeline by project and role — click a project to expand</p></div>
+  </div>
+  <div class="gantt-toolbar">
+    <button class="gantt-zoom-btn active" id="zoom-btn-weeks" onclick="setGanttZoom('weeks')">Weeks</button>
+    <button class="gantt-zoom-btn" id="zoom-btn-months" onclick="setGanttZoom('months')">Months</button>
+    <div class="gantt-legend">
+      <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:var(--red)"></div>Open</div>
+      <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:var(--orange)"></div>In discussion</div>
+      <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:var(--accent)"></div>Offer sent</div>
+      <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:var(--green)"></div>Confirmed</div>
+      <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:repeating-linear-gradient(-45deg,#aaa 0px,#aaa 3px,#fff 3px,#fff 6px);"></div>On leave</div>
+    </div>
+  </div>
+  <div class="gantt-wrap"><div id="gantt-container"></div></div>
+</div>
+
+</main>
+
+<!-- PROJECT MODAL -->
+<div class="modal-overlay" id="modal-project">
+  <div class="modal">
+    <h3 id="modal-project-title">Add project</h3>
+    <div class="field-row">
+      <div class="field"><label>Client</label><input type="text" id="proj-client" placeholder="e.g. Nike"></div>
+      <div class="field"><label>Project name</label><input type="text" id="proj-name" placeholder="e.g. Infinity.studio"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Status</label>
+        <select id="proj-status">
+          <option value="incoming">Incoming</option>
+          <option value="active">Active</option>
+          <option value="onhold">On hold</option>
+          <option value="delivered">Delivered</option>
+        </select>
+      </div>
+      <div class="field"><label>Project type</label>
+        <select id="proj-type">
+        <option value="">— Select type —</option>
+        <option>Website & Platform Builds</option>
+        <option>Redesigns & Replatforming</option>
+        <option>Continuous Optimization & Enhancements</option>
+        <option>Support & Maintenance (S&M)</option>
+        <option>Campaigns & Event Activations</option>
+        <option>Specialized Tech (AI & Web3)</option>
+        <option>Strategy & Discovery</option>
+        <option>Digital Reports & Editorial</option>
+        <option>Loyalty Programs</option>
+        <option>Localization</option>
+      </select>
+      </div>
+    </div>
+    <div class="field"><label>Brief (one line)</label><input type="text" id="proj-brief" placeholder="e.g. Full rebrand + campaign launch"></div>
+    <div class="field"><label>Deliverables</label>
+      <input type="text" class="search-input" id="deliverable-search" oninput="filterDeliverablePicker(this.value)">
+      <div class="deliverable-picker" id="deliverable-picker"></div>
+      <div id="deliverable-preview" style="margin-top:6px;font-size:11px;color:var(--text-3);"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Start date</label><input type="date" id="proj-start"></div>
+      <div class="field"><label>End date</label><input type="date" id="proj-end"></div>
+    </div>
+    <div class="field"><label>Budget</label><input type="text" id="proj-budget" placeholder="e.g. €45,000 or TBD"></div>
+    <div class="field"><label>Notes</label><textarea id="proj-notes" placeholder="Any context..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-project')">Cancel</button>
+      <button class="btn btn-danger" id="proj-delete-btn" onclick="deleteProject()" style="display:none;">Delete</button>
+      <button class="btn btn-primary" onclick="saveProject()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROLE MODAL -->
+<div class="modal-overlay" id="modal-role">
+  <div class="modal">
+    <h3 id="modal-role-title">Add role</h3>
+    <input type="hidden" id="role-project-id">
+    <div class="field-row">
+      <div class="field"><label>Role name</label><input type="text" id="role-name" placeholder="e.g. UX Designer"></div>
+      <div class="field"><label>Status</label>
+        <select id="role-status" onchange="toggleCoverageNote(this.value)">
+          <option value="open">Open — no one yet</option>
+          <option value="discussion">In discussion</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="coverage">Needs Coverage</option>
+        </select>
+      </div>
+    </div>
+    <div id="coverage-note" style="display:none;background:#FFF0F0;border:0.5px solid #F5C6C6;border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:#C0392B;margin-bottom:12px;">
+      ⚠️ A duplicate coverage role will be created automatically beneath this one, pre-filled with the same name and dates.
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Start date</label><input type="date" id="role-start"></div>
+      <div class="field"><label>End date</label><input type="date" id="role-end"></div>
+    </div>
+    <div class="field"><label>Assign talent</label>
+      <input type="text" class="search-input" id="talent-picker-search" oninput="filterTalentPicker(this.value)">
+      <div class="talent-picker" id="talent-picker"></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="role-notes" placeholder="Any context..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-role')">Cancel</button>
+      <button class="btn btn-danger" id="role-delete-btn" onclick="deleteRole()" style="display:none;">Delete</button>
+      <button class="btn btn-primary" onclick="saveRole()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TALENT MODAL -->
+<div class="modal-overlay" id="modal-talent">
+  <div class="modal">
+    <h3 id="modal-talent-title">Add talent</h3>
+    <div class="field-row">
+      <div class="field"><label>First name</label><input type="text" id="tal-first" placeholder="Sara"></div>
+      <div class="field"><label>Last name</label><input type="text" id="tal-last" placeholder="M."></div>
+    </div>
+    <div class="field"><label>Role / discipline</label><input type="text" id="tal-role" placeholder="e.g. Motion designer"></div>
+    <div class="field">
+      <label>Skills</label>
+      <input type="text" class="search-input" id="skills-picker-search" oninput="filterSkillsPicker(this.value)">
+      <div id="skills-picker" style="border:0.5px solid var(--border-md);border-radius:var(--radius-sm);max-height:220px;overflow-y:auto;padding:8px;background:var(--surface);"></div>
+      <div id="skills-selected-preview" style="margin-top:6px;font-size:11px;color:var(--text-3);"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Availability</label>
+        <select id="tal-avail">
+          <option value="available">Available</option>
+          <option value="busy">Busy</option>
+          <option value="from-date">Available from date</option>
+        </select>
+      </div>
+      <div class="field"><label>Available from</label><input type="date" id="tal-avail-date"></div>
+    </div>
+    <div class="field"><label>Rate (€/hr)</label><input type="number" id="tal-rate" placeholder="85"></div>
+    <div class="field"><label>Notes</label><textarea id="tal-notes" placeholder="Anything useful..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-talent')">Cancel</button>
+      <button class="btn btn-danger" id="tal-delete-btn" onclick="deleteTalent()" style="display:none;">Delete</button>
+      <button class="btn btn-primary" onclick="saveTalent()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TIME OFF MODAL -->
+<div class="modal-overlay" id="modal-timeoff">
+  <div class="modal">
+    <h3 id="modal-timeoff-title">Add time off</h3>
+    <div class="field">
+      <label>Person</label>
+      <input type="text" class="search-input" id="to-person-search" oninput="filterTimeoffPerson(this.value)" autocomplete="off">
+      <div id="to-person-dropdown" style="display:none;border:0.5px solid var(--border-md);border-radius:var(--radius-sm);background:var(--surface);max-height:180px;overflow-y:auto;margin-top:2px;"></div>
+      <input type="hidden" id="to-person">
+    </div>
+    <div class="field-row">
+      <div class="field"><label>From</label><input type="date" id="to-start"></div>
+      <div class="field"><label>To</label><input type="date" id="to-end"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-timeoff')">Cancel</button>
+      <button class="btn btn-danger" id="to-delete-btn" onclick="deleteTimeoff()" style="display:none;">Delete</button>
+      <button class="btn btn-primary" onclick="saveTimeoff()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- SKILL ASSIGN MODAL -->
+<div class="modal-overlay" id="modal-skill-assign">
+  <div class="modal">
+    <h3 id="modal-skill-assign-title">Who has this skill?</h3>
+    <p id="modal-skill-assign-desc" style="font-size:12px;color:var(--text-3);margin:-12px 0 16px;"></p>
+    <input type="text" class="search-input" id="skill-assign-search" oninput="filterSkillAssign(this.value)">
+    <div id="skill-assign-list" style="max-height:300px;overflow-y:auto;border:0.5px solid var(--border-md);border-radius:var(--radius-sm);"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-skill-assign')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSkillAssign()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'planning_v1';
+
+function defaultData() {
+  return {
+    weekDate: '',
+    priorities: ['Monks.com','Revlon','Nike'],
+    notes: '',
+    decisions: '',
+    priorityRoles: [],
+    archive: [],
+    projects: [
+      {id:'p1',client:'Kuwait Ministry',name:'Kuwaiti eGov and Sahel App',brief:'',start:'2026-05-01',end:'2026-11-30',budget:'',notes:''},
+      {id:'p2',client:'Resmed',name:'Pippen',brief:'',start:'2025-12-01',end:'2026-12-31',budget:'',notes:''},
+      {id:'p3',client:'Resmed',name:'Retainer',brief:'',start:'2026-08-01',end:'2026-12-31',budget:'',notes:''},
+      {id:'p4',client:'Ministerie of Defensie',name:'Dienjaar',brief:'',start:'2026-07-13',end:'2026-12-31',budget:'',notes:''},
+      {id:'p5',client:'Revlon',name:'Design and Content Migration',brief:'',start:'2026-05-01',end:'2026-12-31',budget:'',notes:''},
+      {id:'p6',client:'Nike',name:'Infinity.studio',brief:'',start:'2026-07-13',end:'2026-12-31',budget:'',notes:''},
+      {id:'p7',client:'DENZA',name:'Rebrand',brief:'',start:'2026-07-13',end:'2026-07-17',budget:'',notes:''},
+      {id:'p8',client:'Amplify',name:'Boomtown Unboxed 2',brief:'',start:'2026-07-13',end:'2026-07-17',budget:'',notes:''},
+      {id:'p9',client:'Monks (internal)',name:'The Essentials',brief:'',start:'2026-07-13',end:'2026-07-17',budget:'',notes:''},
+      {id:'p10',client:'Samsung',name:'AI Chatbot',brief:'',start:'2026-05-01',end:'2026-06-30',budget:'',notes:''},
+      {id:'p11',client:'Samsung',name:'Z8 360 Campaign Launch',brief:'',start:'2026-08-03',end:'2026-08-14',budget:'',notes:''},
+      {id:'p12',client:'Bunq',name:'Content Pipeline',brief:'',start:'2026-07-13',end:'2026-08-31',budget:'',notes:''},
+      {id:'p13',client:'ADCN',name:'AI Mania',brief:'',start:'2026-07-13',end:'2026-08-31',budget:'',notes:''},
+      {id:'p14',client:'Starbucks',name:'Retainer',brief:'',start:'2026-07-13',end:'2026-12-31',budget:'',notes:''},
+      {id:'p15',client:'Efteling',name:'AI Library',brief:'',start:'2026-07-13',end:'2026-08-29',budget:'',notes:''},
+      {id:'p16',client:'Travelzoo',name:'Meta',brief:'',start:'2026-06-15',end:'2026-06-26',budget:'',notes:''},
+      {id:'id_ugdjcoevr',client:'Monks',name:'Monks.com',brief:'redesigning our main landing page',start:'2026-06-22',end:'2026-12-31',budget:'tbd',notes:''},
+      {id:'id_fcqvlrn18',client:'Ministerie of Defensie',name:'Doorontwikkeling',brief:'Retainer',start:'2026-01-01',end:'2026-12-31',budget:'',notes:''}
+    ],
+    roles: [
+      {id:'r1',projectId:'p1',name:'Product Design Director',status:'open',start:'2026-05-01',end:'2026-11-30',talents:[],notes:''},
+      {id:'r2',projectId:'p1',name:'CX / UX Strategist',status:'confirmed',start:'2026-05-01',end:'2026-11-30',talents:['Bram Donkers','Fabiola Nardecchia'],notes:''},
+      {id:'r3',projectId:'p1',name:'Senior UX Designer',status:'confirmed',start:'2026-05-01',end:'2026-11-30',talents:['Jordy Muller'],notes:''},
+      {id:'r4',projectId:'p1',name:'UX Designer',status:'open',start:'2026-05-01',end:'2026-11-30',talents:[],notes:'Tbc if needed'},
+      {id:'r5',projectId:'p1',name:'UI Designer',status:'confirmed',start:'2026-05-01',end:'2026-11-30',talents:['Elbert Niezen'],notes:''},
+      {id:'r6',projectId:'p1',name:'Senior UX Researcher',status:'confirmed',start:'2026-05-01',end:'2026-11-30',talents:['Bram Donkers'],notes:''},
+      {id:'r7',projectId:'p2',name:'UX Designer',status:'confirmed',start:'2025-12-01',end:'2026-12-31',talents:['Mandy Losk'],notes:''},
+      {id:'r8',projectId:'p2',name:'UI Designer',status:'confirmed',start:'2025-12-01',end:'2026-12-31',talents:['Irene Giardina'],notes:''},
+      {id:'r9',projectId:'p3',name:'UX Designer',status:'discussion',start:'2026-08-01',end:'2026-12-31',talents:['Mandy Losk'],notes:''},
+      {id:'r10',projectId:'p3',name:'UI Designer',status:'discussion',start:'2026-08-01',end:'2026-12-31',talents:['Elbert Niezen','Irene Giardina'],notes:''},
+      {id:'r11',projectId:'p4',name:'UI Design Lead',status:'confirmed',start:'2026-07-13',end:'2026-12-31',talents:['Matias Jansen'],notes:''},
+      {id:'r12',projectId:'p4',name:'Sr. UI Designer',status:'confirmed',start:'2026-07-13',end:'2026-12-31',talents:['Roy Veldkamp'],notes:''},
+      {id:'id_s3m8trrhe',projectId:'p4',name:'UX Designer',status:'confirmed',start:'2026-07-13',end:'2026-12-31',talents:['Joost van Der Kuil'],notes:''},
+      {id:'r13',projectId:'p5',name:'Product Design Director',status:'open',start:'2026-05-01',end:'2026-12-31',talents:[],notes:''},
+      {id:'r14',projectId:'p5',name:'Creative',status:'discussion',start:'2026-05-01',end:'2026-12-31',talents:["Geraldine Ruffier d'Epenoux"],notes:''},
+      {id:'r15',projectId:'p5',name:'Design Director',status:'open',start:'2026-05-01',end:'2026-12-31',talents:[],notes:''},
+      {id:'r16',projectId:'p5',name:'UX Designer',status:'open',start:'2026-08-03',end:'2026-12-31',talents:[],notes:''},
+      {id:'r17',projectId:'p5',name:'UI Designer',status:'confirmed',start:'2026-08-17',end:'2026-12-31',talents:[],notes:'Julian Bigiatti, Sr. UI designer (BA/Google)'},
+      {id:'id_6w9m6z1b5',projectId:'p5',name:'UX Director',status:'confirmed',start:'2026-05-01',end:'2026-12-31',talents:[],notes:'Cathy Cong (CAN)'},
+      {id:'r18',projectId:'p6',name:'Sr. UI Designer',status:'confirmed',start:'2026-07-13',end:'2026-12-31',talents:['Tony van Nierop'],notes:''},
+      {id:'r19',projectId:'p6',name:'Sr. UI Designer',status:'confirmed',start:'2026-07-13',end:'2026-12-31',talents:['Sherzod Mirzaakhmedov'],notes:''},
+      {id:'r20',projectId:'p6',name:'Sr. Designer',status:'confirmed',start:'2026-07-13',end:'2026-12-31',talents:['Sinéad Foley'],notes:''},
+      {id:'r21',projectId:'p6',name:'Art Director',status:'open',start:'2026-07-13',end:'2026-12-31',talents:[],notes:''},
+      {id:'r22',projectId:'p6',name:'Creative',status:'open',start:'2026-07-13',end:'2026-12-31',talents:[],notes:''},
+      {id:'r23',projectId:'p7',name:'Brand Design Director',status:'confirmed',start:'2026-07-13',end:'2026-07-17',talents:['Philip Tan'],notes:''},
+      {id:'r24',projectId:'p7',name:'Brand Design Lead',status:'confirmed',start:'2026-07-13',end:'2026-07-17',talents:['Jennifer Weber'],notes:''},
+      {id:'r25',projectId:'p7',name:'Brand Design Lead',status:'confirmed',start:'2026-07-13',end:'2026-07-17',talents:['Lucas Rodriguez'],notes:''},
+      {id:'r26',projectId:'p8',name:'Creative Director',status:'confirmed',start:'2026-07-13',end:'2026-07-17',talents:['Joppe Soons'],notes:''},
+      {id:'r27',projectId:'p9',name:'Creative Director',status:'confirmed',start:'2026-07-13',end:'2026-07-17',talents:['Joppe Soons'],notes:''},
+      {id:'r28',projectId:'p10',name:'Creative Director',status:'confirmed',start:'2026-05-01',end:'2026-06-30',talents:['Laurens van Schijndel'],notes:''},
+      {id:'r29',projectId:'p11',name:'Creative Director',status:'confirmed',start:'2026-08-03',end:'2026-08-14',talents:['Laurens van Schijndel','Joppe Soons'],notes:''},
+      {id:'r30',projectId:'p11',name:'Creative',status:'confirmed',start:'2026-08-03',end:'2026-08-14',talents:['Jurriaan Gossink'],notes:''},
+      {id:'r31',projectId:'p11',name:'Designer',status:'open',start:'2026-08-03',end:'2026-08-14',talents:[],notes:''},
+      {id:'r32',projectId:'p12',name:'System Designer',status:'confirmed',start:'2026-07-13',end:'2026-08-31',talents:['Juliette Jacq'],notes:''},
+      {id:'r33',projectId:'p12',name:'UX Designer',status:'confirmed',start:'2026-07-13',end:'2026-08-31',talents:['Jordy Muller'],notes:''},
+      {id:'r34',projectId:'p13',name:'Creative',status:'confirmed',start:'2026-07-13',end:'2026-08-31',talents:['Laurens van Schijndel','Joppe Soons'],notes:''},
+      {id:'r35',projectId:'p14',name:'UI Designer',status:'confirmed',start:'2026-07-13',end:'2026-12-31',talents:['Lorenzo Tomassetti'],notes:''},
+      {id:'r36',projectId:'p15',name:'Creative',status:'confirmed',start:'2026-07-13',end:'2026-08-29',talents:['Rogier van der Galiën'],notes:''},
+      {id:'r37',projectId:'p16',name:'Creative',status:'confirmed',start:'2026-06-15',end:'2026-06-26',talents:["Geraldine Ruffier d'Epenoux"],notes:''},
+      {id:'id_d7jzj3z8g',projectId:'id_ugdjcoevr',name:'UX Designer',status:'open',start:'2026-06-22',end:'2026-12-31',talents:[],notes:'Couple of hours for now'},
+      {id:'id_30f2zooes',projectId:'id_ugdjcoevr',name:'Strategist',status:'open',start:'2026-06-22',end:'2026-12-31',talents:[],notes:'Few hours for now'},
+      {id:'id_5tx79hbnc',projectId:'id_fcqvlrn18',name:'UX Designer',status:'confirmed',start:'2026-01-01',end:'2026-12-31',talents:[],notes:''},
+      {id:'id_ax3sodmd4',projectId:'id_fcqvlrn18',name:'UI Lead',status:'confirmed',start:'2026-01-01',end:'2026-12-31',talents:['Matias Jansen'],notes:''}
+    ],
+    talents: [
+      {id:'t1',firstname:'Bram',lastname:'Donkers',role:'CX / UX Strategist',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t2',firstname:'Fabiola',lastname:'Nardecchia',role:'UX Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t3',firstname:'Jordy',lastname:'Muller',role:'Senior UX Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t4',firstname:'Elbert',lastname:'Niezen',role:'UI Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t5',firstname:'Mandy',lastname:'Losk',role:'UX Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t6',firstname:'Irene',lastname:'Giardina',role:'UI Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t7',firstname:'Matias',lastname:'Jansen',role:'UI Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t8',firstname:'Roy',lastname:'Veldkamp',role:'Sr. UI Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t9',firstname:'Tony',lastname:'van Nierop',role:'UI Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t10',firstname:'Sherzod',lastname:'Mirzaakhmedov',role:'Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t11',firstname:'Sinéad',lastname:'Foley',role:'Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t12',firstname:'Philip',lastname:'Tan',role:'Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t13',firstname:'Jennifer',lastname:'Weber',role:'Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t14',firstname:'Lucas',lastname:'Rodriguez',role:'Brand Design Lead',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t15',firstname:'Joppe',lastname:'Soons',role:'Creative',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t16',firstname:'Laurens',lastname:'van Schijndel',role:'Creative Director',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t17',firstname:'Jurriaan',lastname:'Gossink',role:'Creative',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t18',firstname:'Juliette',lastname:'Jacq',role:'UI Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t19',firstname:'Lorenzo',lastname:'Tomassetti',role:'UI Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t20',firstname:'Rogier',lastname:'van der Galiën',role:'Creative',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t21',firstname:'Geraldine',lastname:"Ruffier d'Epenoux",role:'Creative',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t22',firstname:'Alexandre',lastname:'Otto',role:'Creative Director',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t23',firstname:'Andrew',lastname:'Verhulp',role:'Creative Director',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t24',firstname:'Carl',lastname:'Feltham',role:'UX Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t25',firstname:'Eduardo',lastname:'Negreiros Marziona',role:'Art Director',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t26',firstname:'Jorge',lastname:'Garcia Alvarez',role:'Art Director',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t27',firstname:'Joseph',lastname:'Jackson',role:'Creative',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t28',firstname:'Ljuba',lastname:'Grishkina',role:'Creative',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t29',firstname:'Luis',lastname:'Guajardo Díaz',role:'Creative technologist',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t30',firstname:'Madina',lastname:'Paulig',role:'Creative',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t31',firstname:'Marcio',lastname:'Souza Leite',role:'Creative',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t32',firstname:'Marco',lastname:'Quattrocchi Febles',role:'Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t33',firstname:'Martin',lastname:'Kool',role:'UX Designer',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t34',firstname:'Mattia',lastname:'Falciani',role:'Creative',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t35',firstname:'Oana',lastname:'Burca',role:'Creative technologist',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t36',firstname:'Paweł',lastname:'Kowalczyk',role:'Creative technologist',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t37',firstname:'Samuel',lastname:'Snider-Held',role:'Creative technologist',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t38',firstname:'Tim',lastname:'Wellenberg',role:'Creative',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'t39',firstname:'Vincent',lastname:'van de Wetering',role:'Creative Director',skills:'',avail:'busy',availDate:'',rate:'',notes:''},
+      {id:'id_3wfxchfcx',firstname:'Joost',lastname:'van Der Kuil',role:'Sr. UX Designer',skills:'',avail:'busy',availDate:'2027-01-01',rate:'',notes:''}
+    ],
+    timeoff: [
+      {id:'to1',  person:'Alexandre Otto',               start:'2026-05-15', end:'2026-05-15'},
+      {id:'to2',  person:'Eduardo Negreiros Marziona',   start:'2026-05-04', end:'2026-05-04'},
+      {id:'to3',  person:'Eduardo Negreiros Marziona',   start:'2026-06-12', end:'2026-06-15'},
+      {id:'to4',  person:'Eduardo Negreiros Marziona',   start:'2026-07-20', end:'2026-07-20'},
+      {id:'to5',  person:'Philip Tan',                   start:'2026-06-16', end:'2026-06-16'},
+      {id:'to6',  person:'Philip Tan',                   start:'2026-06-26', end:'2026-07-01'},
+      {id:'to7',  person:'Philip Tan',                   start:'2026-07-27', end:'2026-07-27'},
+      {id:'to8',  person:'Philip Tan',                   start:'2026-08-31', end:'2026-09-01'},
+      {id:'to9',  person:'Philip Tan',                   start:'2026-09-21', end:'2026-09-29'},
+      {id:'to10', person:'Lucas Rodriguez',               start:'2026-06-17', end:'2026-06-17'},
+      {id:'to11', person:'Lucas Rodriguez',               start:'2026-07-09', end:'2026-07-09'},
+      {id:'to12', person:'Sherzod Mirzaakhmedov',         start:'2026-06-02', end:'2026-06-02'},
+      {id:'to13', person:'Sherzod Mirzaakhmedov',         start:'2026-06-23', end:'2026-06-26'},
+      {id:'to14', person:'Sherzod Mirzaakhmedov',         start:'2026-07-29', end:'2026-08-25'},
+      {id:'to15', person:'Ljuba Grishkina',               start:'2026-06-12', end:'2026-06-12'},
+      {id:'to16', person:'Ljuba Grishkina',               start:'2026-07-24', end:'2026-07-24'},
+      {id:'to17', person:'Ljuba Grishkina',               start:'2026-08-27', end:'2026-08-27'},
+      {id:'to18', person:'Juliette Jacq',                 start:'2026-06-15', end:'2026-07-23'},
+      {id:'to19', person:'Irene Giardina',                start:'2026-06-25', end:'2026-07-27'},
+      {id:'to20', person:"Geraldine Ruffier d'Epenoux",  start:'2026-07-06', end:'2026-07-16'},
+      {id:'to21', person:'Carl Feltham',                  start:'2026-07-03', end:'2026-07-03'},
+      {id:'to22', person:'Carl Feltham',                  start:'2026-07-20', end:'2026-07-20'},
+      {id:'to23', person:'Vincent van de Wetering',       start:'2026-07-20', end:'2026-08-14'},
+      {id:'to24', person:'Tony van Nierop',               start:'2026-07-20', end:'2026-08-03'},
+      {id:'to25', person:'Sinéad Foley',                  start:'2026-07-20', end:'2026-08-03'},
+      {id:'to26', person:'Roy Veldkamp',                  start:'2026-07-06', end:'2026-07-16'},
+      {id:'to27', person:'Andrew Verhulp',                start:'2026-07-13', end:'2026-08-10'},
+      {id:'to28', person:'Jennifer Weber',                start:'2026-10-12', end:'2026-10-17'},
+      {id:'to29', person:'Corné van Schaik',              start:'2026-07-06', end:'2026-07-24'},
+      {id:'to30', person:'Corné van Schaik',              start:'2026-08-12', end:'2026-08-17'},
+      {id:'to31', person:'Rik Spruijt',                   start:'2026-08-07', end:'2026-08-28'},
+      {id:'to32', person:'Estelle Puech',                 start:'2026-07-06', end:'2026-07-15'},
+      {id:'to33', person:'Estelle Puech',                 start:'2026-08-24', end:'2026-08-28'},
+      {id:'to34', person:'Luiz Strauss',                  start:'2026-07-13', end:'2026-07-17'},
+      {id:'to35', person:'Antoine Tannous',               start:'2026-07-20', end:'2026-07-24'},
+      {id:'to36', person:'Milton Nixon',                  start:'2026-07-01', end:'2026-07-10'},
+      {id:'to37', person:'Milton Nixon',                  start:'2026-08-03', end:'2026-08-04'},
+      {id:'to38', person:'Tim Blokker',                   start:'2026-07-13', end:'2026-07-17'},
+      {id:'to39', person:'Tim Blokker',                   start:'2026-08-03', end:'2026-08-14'},
+      {id:'to40', person:'Lara Cumali',                   start:'2026-07-31', end:'2026-08-03'},
+      {id:'to41', person:'Lara Cumali',                   start:'2026-08-17', end:'2026-08-19'},
+      {id:'to42', person:'Xander Amo',                    start:'2026-07-31', end:'2026-08-21'},
+      {id:'to43', person:'Cris Kop',                      start:'2026-08-13', end:'2026-08-31'},
+      {id:'to44', person:'Thomas Smit',                   start:'2026-08-13', end:'2026-08-21'}
+    ]
+  };
+}
+
+let db = {};
+let editingProjectId = null;
+let editingRoleId = null;
+let editingTalentId = null;
+
+function loadData() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  db = saved ? JSON.parse(saved) : defaultData();
+  const fresh = defaultData();
+  // Seed timeoff if missing
+  if(!db.timeoff || !db.timeoff.length) { db.timeoff = fresh.timeoff; saveData(); return; }
+  // Update talent skills if stale
+  let changed = false;
+  db.talents.forEach(t => {
+    const f = fresh.talents.find(x=>x.id===t.id);
+    if(f && f.skills !== t.skills) { t.skills = f.skills; changed = true; }
+  });
+  if(changed) saveData();
+}
+function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
+function uid() { return 'id_' + Math.random().toString(36).substr(2,9); }
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'planning-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  toast('Backup downloaded ✓');
+}
+function importData(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { try { db = JSON.parse(ev.target.result); saveData(); renderAll(); toast('Imported ✓'); } catch { toast('Invalid file'); } };
+  reader.readAsText(file); e.target.value='';
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+
+function fmtDate(d) {
+  if(!d) return '—';
+  const [y,m,day] = d.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return day+' '+months[parseInt(m)-1];
+}
+
+function statusBadge(s) {
+  const map = {open:'badge-open',discussion:'badge-discussion',confirmed:'badge-confirmed',offer:'badge-offer',coverage:'badge-coverage'};
+  const label = {open:'Open',discussion:'In discussion',confirmed:'Confirmed',offer:'Offer sent',coverage:'Needs Coverage'};
+  return `<span class="badge ${map[s]||'badge-open'}">${label[s]||s}</span>`;
+}
+
+function availColor(a) { return {available:'var(--green)',busy:'var(--red)','from-date':'var(--orange)'}[a]||'var(--text-3)'; }
+function availLabel(t) {
+  if(t.avail==='available') return 'Available';
+  if(t.avail==='busy') return 'Busy';
+  if(t.avail==='from-date') return t.availDate ? 'From '+fmtDate(t.availDate) : 'From TBD';
+  return '—';
+}
+
+// ── RENDER ALL ──
+function renderAll() {
+  renderStats();
+  renderProjects();
+  renderOpenRoles();
+  renderAssign();
+  renderTalents();
+  renderSkills();
+  renderTimeoff();
+  renderPriorities();
+  renderArchive();
+  renderPriorityRoles();
+  renderPlanning();
+  updateWeekDate();
+}
+
+function updateWeekDate() {
+  const input = document.getElementById('session-date');
+  if(input) input.value = db.weekDate||'';
+}
+
+function renderStats() {
+  const openCount = db.roles.filter(r=>r.status==='open').length;
+  const discussCount = db.roles.filter(r=>r.status==='discussion').length;
+  const confirmedCount = db.roles.filter(r=>r.status==='confirmed').length;
+  const grid = document.getElementById('stat-row');
+  grid.innerHTML = `
+    <div class="stat-card blue-accent"><div class="stat-label">Projects</div><div class="stat-value">${db.projects.length}</div><div class="stat-sub">Active</div></div>
+    <div class="stat-card red-accent"><div class="stat-label">Open roles</div><div class="stat-value">${openCount}</div><div class="stat-sub">Need filling</div></div>
+    <div class="stat-card orange-accent"><div class="stat-label">In discussion</div><div class="stat-value">${discussCount}</div><div class="stat-sub">Being negotiated</div></div>
+    <div class="stat-card green-accent"><div class="stat-label">Confirmed</div><div class="stat-value">${confirmedCount}</div><div class="stat-sub">Roles filled</div></div>`;
+  const badge = document.getElementById('nav-open-count');
+  const dot = document.getElementById('nav-open-dot');
+  if(openCount > 0) { badge.textContent = openCount; dot.className='nav-dot red'; }
+  else { badge.textContent=''; dot.className='nav-dot green'; }
+  document.getElementById('projects-subtitle').textContent =
+    new Date().toLocaleDateString('en-GB',{month:'long',year:'numeric'}) + ' · ' + db.projects.length + ' projects';
+}
+
+function renderProjects() {
+  const list = document.getElementById('projects-list');
+  if(!db.projects.length){ list.innerHTML='<div class="empty-state">No projects yet</div>'; return; }
+  list.innerHTML = db.projects.map(p => {
+    const pRoles = db.roles.filter(r=>r.projectId===p.id);
+    const openCount = pRoles.filter(r=>r.status==='open').length;
+    const coverageCount = pRoles.filter(r=>r.status==='coverage').length;
+    const roleRows = pRoles.map(r => {
+      const talentStr = r.talents && r.talents.length ? r.talents.join(', ') : '<span class="muted">—</span>';
+      const coverageFlag = r.status === 'coverage' ? ' <span class="coverage-badge">⚠️ Coverage needed</span>' : '';
+      return `<tr>
+        <td style="font-weight:500;">${r.name}${coverageFlag}</td>
+        <td>${talentStr}</td>
+        <td>${statusBadge(r.status)}</td>
+        <td class="muted" style="font-size:12px;">${fmtDate(r.start)} → ${fmtDate(r.end)}</td>
+        <td class="muted" style="font-size:12px;max-width:160px;">${r.notes||'—'}</td>
+        <td><button class="btn-icon" onclick="openRoleModal('${p.id}','${r.id}')" title="Edit">✎</button></td>
+      </tr>`;
+    }).join('');
+    const openBadge = openCount > 0
+      ? `<span class="badge badge-open">${openCount} open</span>`
+      : `<span class="badge badge-confirmed">All filled</span>`;
+    const coverageBadge = coverageCount > 0
+      ? `<span class="badge badge-coverage">⚠️ ${coverageCount} coverage</span>`
+      : '';
+    const typeBadge = p.type ? `<span class="proj-type-badge">${p.type}</span>` : '';
+    const statusMap = {incoming:'proj-status-incoming',active:'proj-status-active',onhold:'proj-status-onhold',delivered:'proj-status-delivered'};
+    const statusLabel = {incoming:'Incoming',active:'Active',onhold:'On hold',delivered:'Delivered'};
+    const statusBadgeEl = `<span class="proj-status-badge ${statusMap[p.status]||'proj-status-active'}" onclick="event.stopPropagation();cycleProjectStatus('${p.id}')" style="cursor:pointer;" title="Click to change status">${statusLabel[p.status]||'Active'}</span>`;
+    const delivTags = (p.deliverables||[]).length
+      ? `<div class="proj-deliverable-tags">${p.deliverables.map(d=>`<span class="proj-deliverable-tag">${d}</span>`).join('')}</div>`
+      : '';
+    return `
+    <div class="project-card">
+      <div class="project-card-header" onclick="toggleRoles('${p.id}')">
+        <div class="proj-left">
+          <div class="proj-client">${p.client||'—'}</div>
+          <div class="proj-name">${p.name}</div>
+          ${p.brief ? `<div class="proj-brief">${p.brief}</div>` : ''}
+          <div class="proj-meta">
+            ${typeBadge}
+            <span class="proj-meta-item">${fmtDate(p.start)} → ${fmtDate(p.end)}</span>
+            ${p.budget ? `<span class="proj-meta-item"><strong>Budget:</strong> ${p.budget}</span>` : ''}
+            <span class="proj-meta-item"><strong>${pRoles.length}</strong> role${pRoles.length!==1?'s':''}</span>
+          </div>
+          ${delivTags}
+        </div>
+        <div class="proj-right">
+          ${statusBadgeEl}
+          ${coverageBadge}
+          ${openBadge}
+          <button class="btn-icon" onclick="event.stopPropagation();openProjectModal('${p.id}')" title="Edit">✎</button>
+          <span class="chevron" id="chev-${p.id}">▾</span>
+        </div>
+      </div>
+      <div class="roles-panel" id="panel-${p.id}">
+        <table class="roles-table">
+          <thead><tr><th>Role</th><th>Assigned to</th><th>Status</th><th>Dates</th><th>Notes</th><th></th></tr></thead>
+          <tbody>${roleRows||'<tr><td colspan="6" class="empty-state">No roles yet</td></tr>'}</tbody>
+        </table>
+        <div class="roles-panel-footer">
+          <button class="btn" onclick="openRoleModal('${p.id}')">+ Add role</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleRoles(id) {
+  const panel = document.getElementById('panel-'+id);
+  const chev = document.getElementById('chev-'+id);
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open',!isOpen);
+  chev.classList.toggle('open',!isOpen);
+}
+
+function renderOpenRoles() {
+  const container = document.getElementById('open-roles-list');
+  const openRoles = db.roles.filter(r=>r.status==='open'||r.status==='discussion');
+  if(!openRoles.length){
+    container.innerHTML='<div class="open-roles-list"><div class="empty-state">No open roles — all filled ✓</div></div>';
+    return;
+  }
+  container.innerHTML = '<div class="open-roles-list">'+openRoles.map(r=>{
+    const p = db.projects.find(x=>x.id===r.projectId);
+    const dotClass = r.status==='open' ? 'critical' : 'discussion';
+    return `<div class="open-role-row">
+      <div class="or-dot ${dotClass}"></div>
+      <div style="flex:1">
+        <div class="or-role">${r.name}</div>
+        <div class="or-project">${p?.name||'?'} · ${fmtDate(r.start)} → ${fmtDate(r.end)}</div>
+      </div>
+      <span class="or-client">${p?.client||'?'}</span>
+      ${statusBadge(r.status)}
+      <button class="btn-icon" onclick="openRoleModal('${r.projectId}','${r.id}')" title="Assign">✎</button>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+function renderTalents() {
+  const grid = document.getElementById('talent-grid');
+  if(!db.talents.length){grid.innerHTML='<div class="empty-state">No talents yet</div>';return;}
+  const colors=['#E8F0FB','#EDF6ED','#FDF4E7','#F0EDFB'];
+  const textColors=['#1A56A0','#1A4A1A','#5C3800','#3C3489'];
+  grid.innerHTML = db.talents.map((t,i)=>{
+    const ci = i%4;
+    const skills = (t.skills||'').split(',').filter(Boolean).map(s=>`<span class="tag">${s.trim()}</span>`).join('');
+    return `<div class="talent-card">
+      <div class="talent-card-header">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:28px;height:28px;border-radius:50%;background:${colors[ci]};color:${textColors[ci]};font-size:10px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${(t.firstname[0]||'')+(t.lastname[0]||'')}</span>
+            <span class="talent-name">${t.firstname} ${t.lastname}</span>
+          </div>
+        </div>
+        <button class="btn-icon" onclick="openTalentModal('${t.id}')" title="Edit">✎</button>
+      </div>
+      <div class="talent-role-label">${t.role||'—'}</div>
+      <div style="margin-bottom:8px;"><span class="avail-dot" style="background:${availColor(t.avail)}"></span><span style="font-size:12px;color:var(--text-2);">${availLabel(t)}</span>${t.rate?`<span style="font-size:11px;color:var(--text-3);margin-left:8px;">${t.rate} €/hr</span>`:''}</div>
+      <div>${skills||'<span class="muted" style="font-size:12px;">No skills listed</span>'}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPriorities() {
+  document.getElementById('p1').value = db.priorities[0]||'';
+  document.getElementById('p2').value = db.priorities[1]||'';
+  document.getElementById('p3').value = db.priorities[2]||'';
+  document.getElementById('meeting-notes').value = db.notes||'';
+  document.getElementById('decisions-notes').value = db.decisions||'';
+  const dateEl = document.getElementById('session-date');
+  if(dateEl) dateEl.value = db.weekDate||'';
+  renderPriorityRoles();
+  renderArchive();
+}
+
+function togglePriorityRoles() {
+  const panel = document.getElementById('priority-roles-panel');
+  const chev = document.getElementById('pr-chevron');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+function renderPriorityRoles() {
+  if(!db.priorityRoles) db.priorityRoles = [];
+  const list = document.getElementById('priority-roles-list');
+  if(!list) return;
+
+  const openRoles = db.roles.filter(r => r.status==='open' || r.status==='discussion');
+  const selected = db.priorityRoles
+    .map(id => db.roles.find(x=>x.id===id))
+    .filter(Boolean);
+  const available = openRoles.filter(r => !db.priorityRoles.includes(r.id));
+
+  const selectedHTML = selected.length
+    ? selected.map(r => {
+        const p = db.projects.find(x=>x.id===r.projectId);
+        return `<div class="pr-card">
+          <div style="flex:1;min-width:0;">
+            <div class="pr-card-role">${r.name}</div>
+            <div class="pr-card-meta">${p?.client||''} · ${p?.name||'?'}</div>
+          </div>
+          ${statusBadge(r.status)}
+          <button class="pr-remove" onclick="removePriorityRole('${r.id}')" title="Remove">×</button>
+        </div>`;
+      }).join('')
+    : `<div style="font-size:12px;color:var(--text-3);padding:4px 0;">No priority roles yet — add from below</div>`;
+
+  const availableHTML = available.length
+    ? available.map(r => {
+        const p = db.projects.find(x=>x.id===r.projectId);
+        return `<div class="pr-option">
+          <div style="flex:1;min-width:0;">
+            <div class="pr-option-role">${r.name}</div>
+            <div class="pr-option-meta">${p?.client||''} · ${p?.name||'?'}</div>
+          </div>
+          ${statusBadge(r.status)}
+          <button class="pr-add-btn" onclick="addPriorityRole('${r.id}')">+ Add</button>
+        </div>`;
+      }).join('')
+    : `<div style="font-size:12px;color:var(--text-3);">All open roles already added</div>`;
+
+  list.innerHTML = `
+    <div class="pr-selected">${selectedHTML}</div>
+    <hr class="pr-divider">
+    <div class="pr-available-label">Add from open roles</div>
+    <div class="pr-available">${availableHTML}</div>`;
+}
+
+function addPriorityRole(id) {
+  if(!db.priorityRoles) db.priorityRoles = [];
+  if(!db.priorityRoles.includes(id)) {
+    db.priorityRoles.push(id);
+    saveData();
+    renderPriorityRoles();
+  }
+}
+
+function removePriorityRole(id) {
+  db.priorityRoles = (db.priorityRoles||[]).filter(x=>x!==id);
+  saveData();
+  renderPriorityRoles();
+}
+
+function renderArchive() {
+  const container = document.getElementById('archive-list');
+  if(!container) return;
+  const archive = (db.archive||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  if(!archive.length) {
+    container.innerHTML = '<div class="empty-state">No archived sessions yet</div>';
+    return;
+  }
+  container.innerHTML = archive.map((s,i) => {
+    const dateLabel = s.date ? new Date(s.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) : 'Undated';
+    const preview = [s.priorities[0],s.priorities[1],s.priorities[2]].filter(Boolean).join(' · ') || 'No priorities set';
+    const priList = s.priorities.filter(Boolean).map((p,j)=>`<div style="display:flex;gap:8px;margin-bottom:4px;"><span class="priority-num">${j+1}</span><span style="font-size:13px;">${p}</span></div>`).join('');
+    const openRolesHtml = (s.openRoles||[]).length
+      ? s.openRoles.map(r=>`<span class="archive-open-role">${r.project} — ${r.name}</span>`).join('')
+      : '<span style="color:var(--text-3);font-size:12px;">None</span>';
+    return `<div class="archive-entry">
+      <div class="archive-entry-header" onclick="toggleArchive(${i})">
+        <div class="archive-date">${dateLabel}</div>
+        <div class="archive-preview">${preview}</div>
+        <button class="btn-icon" onclick="event.stopPropagation();deleteArchiveEntry(${i})" title="Delete">✕</button>
+        <span style="font-size:11px;color:var(--text-3);">▾</span>
+      </div>
+      <div class="archive-body" id="archive-body-${i}">
+        ${priList ? `<div class="archive-section"><div class="archive-section-label">Priorities</div><div>${priList}</div></div>` : ''}
+        ${s.notes ? `<div class="archive-section"><div class="archive-section-label">Meeting notes</div><div class="archive-section-content">${s.notes}</div></div>` : ''}
+        ${s.decisions ? `<div class="archive-section"><div class="archive-section-label">Decisions & actions</div><div class="archive-section-content">${s.decisions}</div></div>` : ''}
+        ${s.priorityRoles && s.priorityRoles.length ? `<div class="archive-section"><div class="archive-section-label">Priority roles</div><div>${s.priorityRoles.map(r=>`<span class="archive-open-role">${r.project} — ${r.name}</span>`).join('')}</div></div>` : ''}
+        <div class="archive-section"><div class="archive-section-label">All open roles at the time</div><div>${openRolesHtml}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleArchive(i) {
+  const body = document.getElementById('archive-body-'+i);
+  if(body) body.classList.toggle('open');
+}
+
+function deleteArchiveEntry(i) {
+  if(!confirm('Delete this archived session?')) return;
+  const archive = (db.archive||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const entry = archive[i];
+  db.archive = db.archive.filter(x=>x!==entry);
+  saveData(); renderArchive();
+}
+
+function archiveSession(silent) {
+  if(!db.archive) db.archive = [];
+  const hasContent = db.priorities.some(Boolean) || db.notes || db.decisions;
+  if(!hasContent) { if(!silent) toast('Nothing to archive — add priorities or notes first'); return; }
+  const openRoles = db.roles
+    .filter(r=>r.status==='open'||r.status==='discussion')
+    .map(r=>{ const p=db.projects.find(x=>x.id===r.projectId); return {project:p?.name||'?',name:r.name,status:r.status}; });
+  db.archive.push({
+    id: uid(),
+    date: db.weekDate||new Date().toISOString().slice(0,10),
+    priorities: [...db.priorities],
+    notes: db.notes||'',
+    decisions: db.decisions||'',
+    priorityRoles: (db.priorityRoles||[]).map(id=>{
+      const r=db.roles.find(x=>x.id===id);
+      const p=db.projects.find(x=>x.id===r?.projectId);
+      return r ? {name:r.name,project:p?.name||'?',status:r.status} : null;
+    }).filter(Boolean),
+    openRoles
+  });
+  saveData(); renderArchive();
+  if(!silent) toast('Session archived ✓');
+}
+
+function onSessionDateChange(newDate) {
+  // Auto-archive current session before switching
+  archiveSession(true);
+  // Clear current session for new date
+  db.weekDate = newDate;
+  db.priorities = ['','',''];
+  db.notes = '';
+  db.decisions = '';
+  db.priorityRoles = [];
+  saveData();
+  renderPriorities();
+  toast('New session started ✓');
+}
+
+function savePriorities() {
+  db.priorities = [
+    document.getElementById('p1').value,
+    document.getElementById('p2').value,
+    document.getElementById('p3').value
+  ];
+  saveData();
+}
+
+function saveNotes() {
+  db.notes = document.getElementById('meeting-notes').value;
+  db.decisions = document.getElementById('decisions-notes').value;
+  saveData();
+}
+
+function copyRecap() {
+  const week = document.getElementById('session-date').value;
+  const weekStr = week ? new Date(week).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) : 'this week';
+  const p1 = document.getElementById('p1').value;
+  const p2 = document.getElementById('p2').value;
+  const p3 = document.getElementById('p3').value;
+  const notes = document.getElementById('meeting-notes').value;
+  const decisions = document.getElementById('decisions-notes').value;
+  const openRoles = db.roles.filter(r=>r.status==='open'||r.status==='discussion');
+
+  let recap = `PLANNING MEETING — Week of ${weekStr}\n\n`;
+  if(p1||p2||p3){
+    recap += `TOP PRIORITIES\n`;
+    if(p1) recap += `1. ${p1}\n`;
+    if(p2) recap += `2. ${p2}\n`;
+    if(p3) recap += `3. ${p3}\n`;
+    recap += '\n';
+  }
+  if(openRoles.length){
+    recap += `OPEN ROLES (${openRoles.length})\n`;
+    openRoles.forEach(r=>{
+      const p = db.projects.find(x=>x.id===r.projectId);
+      recap += `· ${p?.name||'?'} — ${r.name} [${r.status}]\n`;
+    });
+    recap += '\n';
+  }
+  if(notes) recap += `MEETING NOTES\n${notes}\n\n`;
+  if(decisions) recap += `DECISIONS & ACTIONS\n${decisions}\n`;
+
+  navigator.clipboard.writeText(recap.trim()).then(()=>toast('Recap copied ✓')).catch(()=>toast('Copy failed'));
+}
+
+function cycleProjectStatus(id) {
+  const order = ['incoming','active','onhold','delivered'];
+  const p = db.projects.find(x=>x.id===id);
+  if(!p) return;
+  const cur = order.indexOf(p.status||'active');
+  p.status = order[(cur+1) % order.length];
+  saveData();
+  renderProjects();
+  renderStats();
+}
+
+// ── PROJECT MODAL ──
+function openProjectModal(id) {
+  editingProjectId = id||null;
+  const p = id ? db.projects.find(x=>x.id===id) : null;
+  document.getElementById('modal-project-title').textContent = p ? 'Edit project' : 'Add project';
+  document.getElementById('proj-client').value = p?.client||'';
+  document.getElementById('proj-name').value = p?.name||'';
+  document.getElementById('proj-status').value = p?.status||'active';
+  document.getElementById('proj-brief').value = p?.brief||'';
+  document.getElementById('proj-type').value = p?.type||'';
+  document.getElementById('proj-start').value = p?.start||'';
+  document.getElementById('proj-end').value = p?.end||'';
+  document.getElementById('proj-budget').value = p?.budget||'';
+  document.getElementById('proj-notes').value = p?.notes||'';
+  document.getElementById('proj-delete-btn').style.display = p ? 'inline-block' : 'none';
+  document.getElementById('deliverable-search').value = '';
+  buildDeliverablePicker(p?.deliverables||[]);
+  openModal('modal-project');
+}
+function saveProject() {
+  const name = document.getElementById('proj-name').value.trim();
+  if(!name){toast('Project name required');return;}
+  const deliverables = [...document.querySelectorAll('#deliverable-picker input[type=checkbox]:checked')].map(c=>c.value);
+  const data = {client:document.getElementById('proj-client').value.trim(),name,status:document.getElementById('proj-status').value,brief:document.getElementById('proj-brief').value.trim(),type:document.getElementById('proj-type').value,deliverables,start:document.getElementById('proj-start').value,end:document.getElementById('proj-end').value,budget:document.getElementById('proj-budget').value.trim(),notes:document.getElementById('proj-notes').value.trim()};
+  if(editingProjectId){Object.assign(db.projects.find(x=>x.id===editingProjectId),data);}
+  else{db.projects.push({id:uid(),...data});}
+  saveData();renderAll();closeModal('modal-project');toast('Saved ✓');
+}
+function deleteProject() {
+  if(!confirm('Delete project and all its roles?'))return;
+  db.projects = db.projects.filter(x=>x.id!==editingProjectId);
+  db.roles = db.roles.filter(x=>x.projectId!==editingProjectId);
+  saveData();renderAll();closeModal('modal-project');toast('Deleted');
+}
+
+// ── ROLE MODAL ──
+function openRoleModal(projectId, roleId) {
+  editingRoleId = roleId||null;
+  const r = roleId ? db.roles.find(x=>x.id===roleId) : null;
+  const p = db.projects.find(x=>x.id===projectId);
+  document.getElementById('modal-role-title').textContent = (r?'Edit role':'Add role')+(p?' — '+p.name:'');
+  document.getElementById('role-project-id').value = projectId;
+  document.getElementById('role-name').value = r?.name||'';
+  document.getElementById('role-status').value = r?.status||'open';
+  document.getElementById('role-start').value = r?.start||p?.start||'';
+  document.getElementById('role-end').value = r?.end||p?.end||'';
+  document.getElementById('role-notes').value = r?.notes||'';
+  document.getElementById('role-delete-btn').style.display = r ? 'inline-block' : 'none';
+  const tpSearch = document.getElementById('talent-picker-search');
+  if(tpSearch) tpSearch.value = '';
+  buildTalentPicker(r?.talents||[]);
+  openModal('modal-role');
+}
+
+function buildTalentPicker(selected) {
+  const picker = document.getElementById('talent-picker');
+  picker.innerHTML = db.talents.map(t=>{
+    const fullName = t.firstname+' '+t.lastname;
+    const checked = selected.includes(fullName) ? 'checked' : '';
+    return `<label class="talent-option">
+      <input type="checkbox" value="${fullName}" ${checked}>
+      <div><div class="talent-option-name">${fullName}</div><div class="talent-option-role">${t.role}</div></div>
+    </label>`;
+  }).join('');
+}
+
+function saveRole() {
+  const name = document.getElementById('role-name').value.trim();
+  if(!name){toast('Role name required');return;}
+  const projectId = document.getElementById('role-project-id').value;
+  const status = document.getElementById('role-status').value;
+  const checked = [...document.querySelectorAll('#talent-picker input[type=checkbox]:checked')].map(c=>c.value);
+  const data = {projectId,name,status,start:document.getElementById('role-start').value,end:document.getElementById('role-end').value,talents:checked,notes:document.getElementById('role-notes').value.trim()};
+  if(editingRoleId){Object.assign(db.roles.find(x=>x.id===editingRoleId),data);}
+  else{
+    db.roles.push({id:uid(),...data});
+    // Auto-create a coverage role if needed
+    if(status === 'coverage') {
+      db.roles.push({id:uid(),projectId,name:name+' (Coverage)',status:'open',start:data.start,end:data.end,talents:[],notes:'Auto-created coverage role'});
+    }
+  }
+  saveData();renderAll();closeModal('modal-role');toast('Saved ✓');
+}
+function deleteRole() {
+  if(!confirm('Delete this role?'))return;
+  db.roles = db.roles.filter(x=>x.id!==editingRoleId);
+  saveData();renderAll();closeModal('modal-role');toast('Deleted');
+}
+
+// ── TALENT MODAL ──
+function openTalentModal(id) {
+  editingTalentId = id||null;
+  const t = id ? db.talents.find(x=>x.id===id) : null;
+  document.getElementById('modal-talent-title').textContent = t ? 'Edit talent' : 'Add talent';
+  document.getElementById('tal-first').value = t?.firstname||'';
+  document.getElementById('tal-last').value = t?.lastname||'';
+  document.getElementById('tal-role').value = t?.role||'';
+
+  // Build skills picker
+  const searchEl = document.getElementById('skills-picker-search');
+  if(searchEl) { searchEl.value = ''; }
+  const currentSkills = (t?.skills||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const picker = document.getElementById('skills-picker');
+  picker.innerHTML = SKILL_CATEGORIES.map(cat => `
+    <div class="skills-picker-cat">${cat.label}</div>
+    ${cat.skills.map(skill => `
+      <label class="skills-picker-item">
+        <input type="checkbox" value="${skill}" ${currentSkills.includes(skill)?'checked':''} onchange="updateSkillsPreview()">
+        ${skill}
+      </label>`).join('')}
+  `).join('');
+  updateSkillsPreview();
+  document.getElementById('tal-avail').value = t?.avail||'available';
+  document.getElementById('tal-avail-date').value = t?.availDate||'';
+  document.getElementById('tal-rate').value = t?.rate||'';
+  document.getElementById('tal-notes').value = t?.notes||'';
+  document.getElementById('tal-delete-btn').style.display = t ? 'inline-block' : 'none';
+  openModal('modal-talent');
+}
+function saveTalent() {
+  const firstname = document.getElementById('tal-first').value.trim();
+  if(!firstname){toast('First name required');return;}
+  const checkedSkills = [...document.querySelectorAll('#skills-picker input[type=checkbox]:checked')].map(cb => cb.value).join(', ');
+  const data = {firstname,lastname:document.getElementById('tal-last').value.trim(),role:document.getElementById('tal-role').value.trim(),skills:checkedSkills,avail:document.getElementById('tal-avail').value,availDate:document.getElementById('tal-avail-date').value,rate:document.getElementById('tal-rate').value,notes:document.getElementById('tal-notes').value.trim()};
+  if(editingTalentId){Object.assign(db.talents.find(x=>x.id===editingTalentId),data);}
+  else{db.talents.push({id:uid(),...data});}
+  saveData();renderAll();closeModal('modal-talent');toast('Saved ✓');
+}
+function deleteTalent() {
+  if(!confirm('Delete this talent?'))return;
+  db.talents = db.talents.filter(x=>x.id!==editingTalentId);
+  saveData();renderAll();closeModal('modal-talent');toast('Deleted');
+}
+
+// ── QUICK ASSIGN ──
+let selectedRoleId = null;
+
+function renderAssign() {
+  renderAssignRoles();
+  renderAssignTalents();
+}
+
+function renderAssignRoles() {
+  const openRoles = db.roles.filter(r => r.status === 'open' || r.status === 'discussion');
+  const countEl = document.getElementById('assign-open-count');
+  if(countEl) countEl.textContent = openRoles.length ? openRoles.length + ' open' : 'All filled';
+  if(countEl) countEl.style.cssText = openRoles.length
+    ? 'font-size:11px;background:var(--red-bg);color:var(--red-text);padding:2px 8px;border-radius:10px;'
+    : 'font-size:11px;background:var(--green-bg);color:var(--green-text);padding:2px 8px;border-radius:10px;';
+
+  const list = document.getElementById('assign-roles-list');
+  if(!list) return;
+
+  const query = (document.getElementById('assign-roles-search')?.value||'').toLowerCase();
+  const filtered = openRoles.filter(r => {
+    if(!query) return true;
+    const p = db.projects.find(x => x.id === r.projectId);
+    return r.name.toLowerCase().includes(query)
+      || (p?.name||'').toLowerCase().includes(query)
+      || (p?.client||'').toLowerCase().includes(query);
+  });
+
+  if(!filtered.length) { list.innerHTML='<div class="assign-hint">No roles match</div>'; return; }
+
+  list.innerHTML = filtered.map(r => {
+    const p = db.projects.find(x => x.id === r.projectId);
+    const isSelected = r.id === selectedRoleId;
+    const assigned = r.talents && r.talents.length ? r.talents.join(', ') : null;
+    return `<div class="assign-role-row ${isSelected?'selected':''}" onclick="selectRole('${r.id}')">
+      <div class="assign-role-name">${r.name}</div>
+      <div class="assign-role-project">${p?.client||''} · ${p?.name||'?'}</div>
+      <div class="assign-role-status">${statusBadge(r.status)}${assigned ? `<span style="font-size:11px;color:var(--text-3);margin-left:6px;">→ ${assigned}</span>` : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectRole(roleId) {
+  selectedRoleId = roleId;
+  renderAssignRoles();
+  renderAssignTalents();
+}
+
+function renderAssignTalents() {
+  const list = document.getElementById('assign-talents-list');
+  if(!list) return;
+  if(!selectedRoleId) { list.innerHTML='<div class="assign-hint">← Select a role to assign talent</div>'; return; }
+
+  const role = db.roles.find(r => r.id === selectedRoleId);
+  if(!role) { list.innerHTML='<div class="assign-hint">Role not found</div>'; return; }
+
+  const query = (document.getElementById('assign-search')?.value||'').toLowerCase();
+  let talents = db.talents;
+  if(query) talents = talents.filter(t =>
+    (t.firstname+' '+t.lastname).toLowerCase().includes(query) ||
+    (t.role||'').toLowerCase().includes(query) ||
+    (t.skills||'').toLowerCase().includes(query)
+  );
+
+  const assignedNames = role.talents || [];
+
+  list.innerHTML = talents.map(t => {
+    const fullName = t.firstname+' '+t.lastname;
+    const isAssigned = assignedNames.includes(fullName);
+    const availColor_ = availColor(t.avail);
+    return `<div class="assign-talent-row ${t.avail==='busy'&&!isAssigned?'busy':''}">
+      <span style="width:30px;height:30px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${(t.firstname[0]||'')+(t.lastname[0]||'')}</span>
+      <div class="assign-talent-info">
+        <div class="assign-talent-name">${fullName}</div>
+        <div class="assign-talent-role">${t.role||'—'} · <span style="color:${availColor_}">${availLabel(t)}</span></div>
+      </div>
+      ${isAssigned
+        ? `<button class="assign-btn remove" onclick="unassignTalent('${t.id}')">Remove</button>`
+        : `<button class="assign-btn" onclick="assignTalent('${t.id}')">Assign</button>`
+      }
+    </div>`;
+  }).join('') || '<div class="assign-hint">No talents match</div>';
+}
+
+function assignTalent(talentId) {
+  const role = db.roles.find(r => r.id === selectedRoleId);
+  if(!role) return;
+  const t = db.talents.find(x => x.id === talentId);
+  if(!t) return;
+  const fullName = t.firstname+' '+t.lastname;
+  if(!role.talents) role.talents = [];
+  if(!role.talents.includes(fullName)) role.talents.push(fullName);
+  if(role.status === 'open') role.status = 'discussion';
+  saveData(); renderAll(); renderAssign();
+  toast(fullName+' assigned ✓');
+}
+
+function unassignTalent(talentId) {
+  const role = db.roles.find(r => r.id === selectedRoleId);
+  if(!role) return;
+  const t = db.talents.find(x => x.id === talentId);
+  if(!t) return;
+  const fullName = t.firstname+' '+t.lastname;
+  role.talents = (role.talents||[]).filter(n => n !== fullName);
+  saveData(); renderAll();
+  toast('Removed ✓');
+}
+
+// ── SKILLS ──
+let skillsFilter = 'all';
+
+const SKILL_CATEGORIES = [
+  { label: 'Strategy & Planning', skills: [
+    'Strategic Planning', 'Creative Strategy', 'User Research & Insights',
+    'CX & Journey Strategy', 'Innovation & Futures'
+  ]},
+  { label: 'Creative & Narrative', skills: [
+    'Creative Direction', 'Copywriting & Storytelling',
+    'Campaign & Experiential', 'Motion & Visual Language'
+  ]},
+  { label: 'Design Systems & UI/UX', skills: [
+    'Design Systems', 'UI Design', 'UX Design & Interaction',
+    'Accessibility & Inclusive Design', 'Digital Product Design'
+  ]},
+  { label: 'Development & Technical', skills: [
+    'Frontend Development', 'Backend & Full-Stack',
+    'Creative Technology', 'Data & Analytics'
+  ]},
+  { label: 'Project Delivery', skills: [
+    'Project Management & Operations', 'Client Management & Communication',
+    'Production & Execution'
+  ]},
+  { label: 'Content & Editorial', skills: [
+    'Web Content & SEO', 'Editorial Design'
+  ]},
+  { label: 'AI & Emerging Tech', skills: [
+    'Generative AI', 'AI Strategy & Implementation'
+  ]}
+];
+
+const ALL_25_SKILLS = SKILL_CATEGORIES.flatMap(c => c.skills);
+
+function renderSkills() {
+  const container = document.getElementById('skills-container');
+  const filterBar = document.getElementById('skills-filter');
+  if(!container) return;
+
+  // Build skill → people map — only from the 25 canonical skills
+  const skillMap = {};
+  ALL_25_SKILLS.forEach(s => skillMap[s] = []);
+
+  db.talents.forEach((t, i) => {
+    const talentSkills = (t.skills||'').split(',').map(s => s.trim()).filter(Boolean);
+    talentSkills.forEach(skill => {
+      if(skillMap[skill] !== undefined) {
+        skillMap[skill].push({ name: t.firstname + ' ' + t.lastname, initials: (t.firstname[0]||'') + (t.lastname[0]||''), colorIdx: i });
+      }
+    });
+  });
+
+  const maxCount = Math.max(...ALL_25_SKILLS.map(s => skillMap[s].length), 1);
+
+  const avColors = [
+    {bg:'#E6F1FB',color:'#0C447C'},{bg:'#EAF3DE',color:'#27500A'},
+    {bg:'#FAEEDA',color:'#633806'},{bg:'#EEEDFE',color:'#3C3489'},
+    {bg:'#FCEBEB',color:'#791F1F'},{bg:'#E1F5EE',color:'#085041'}
+  ];
+  function avStyle(idx) { const c = avColors[idx % avColors.length]; return `background:${c.bg};color:${c.color};`; }
+
+  function badgeFor(n) {
+    if(n === 0) return {label:'Gap',    bg:'#FCEBEB', color:'#791F1F'};
+    if(n <= 2)  return {label:'Low',    bg:'#FAEEDA', color:'#633806'};
+    if(n <= 4)  return {label:'Ok',     bg:'#E6F1FB', color:'#0C447C'};
+    return              {label:'Strong',bg:'#EAF3DE', color:'#27500A'};
+  }
+  function barColor(n) {
+    if(n === 0) return 'var(--red)';
+    if(n <= 2)  return 'var(--orange)';
+    if(n <= 4)  return 'var(--accent)';
+    return 'var(--green)';
+  }
+
+  // Filter buttons
+  const filters = [
+    {id:'all',label:'All'},{id:'gap',label:'Gap (0)'},
+    {id:'low',label:'Low (≤2)'},{id:'ok',label:'Ok (≤4)'},{id:'strong',label:'Strong (5+)'}
+  ];
+  filterBar.innerHTML = filters.map(f =>
+    `<button class="skills-filter-btn${skillsFilter===f.id?' active':''}" onclick="setSkillsFilter('${f.id}')">${f.label}</button>`
+  ).join('');
+
+  function skillVisible(skill) {
+    const n = skillMap[skill].length;
+    if(skillsFilter === 'gap')    return n === 0;
+    if(skillsFilter === 'low')    return n > 0 && n <= 2;
+    if(skillsFilter === 'ok')     return n > 2 && n <= 4;
+    if(skillsFilter === 'strong') return n >= 5;
+    return true;
+  }
+
+  // ── GAP VIEW ──
+  const gapRows = ALL_25_SKILLS.filter(skillVisible).map(skill => {
+    const n = skillMap[skill].length;
+    const badge = badgeFor(n);
+    const pct = Math.round((n / maxCount) * 100);
+    return `<div class="skills-gap-row">
+      <div class="skills-gap-name">${skill}</div>
+      <div class="skills-gap-bar-wrap"><div class="skills-gap-bar" style="width:${Math.max(pct,2)}%;background:${barColor(n)};opacity:0.75;"></div></div>
+      <div class="skills-gap-count">${n} person${n!==1?'s':''}</div>
+      <span class="skills-gap-badge" style="background:${badge.bg};color:${badge.color};">${badge.label}</span>
+      <button class="btn-icon" onclick="openSkillAssign('${skill.replace(/'/g,"\\'")}')" title="Assign talents" style="font-size:13px;flex-shrink:0;">＋</button>
+    </div>`;
+  }).join('');
+
+  // ── SKILL CARDS grouped by category ──
+  const cardSections = SKILL_CATEGORIES.map(cat => {
+    const visibleSkills = cat.skills.filter(skillVisible);
+    if(!visibleSkills.length) return '';
+    const cards = visibleSkills.map(skill => {
+      const people = skillMap[skill];
+      const n = people.length;
+      const badge = badgeFor(n);
+      const cardClass = n === 0 ? 'gap' : n <= 2 ? 'low' : '';
+      const displayAvatars = people.slice(0,8).map(p =>
+        `<span class="skills-av" style="${avStyle(p.colorIdx)}" title="${p.name}">${p.initials}</span>`
+      ).join('') + (n > 8 ? `<span style="font-size:10px;color:var(--text-3);line-height:22px;">+${n-8}</span>` : '');
+      return `<div class="skills-card ${cardClass}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;">
+          <div class="skills-card-name">${skill}</div>
+          <button class="btn-icon" onclick="openSkillAssign('${skill.replace(/'/g,"\\'")}')" title="Assign talents" style="font-size:13px;flex-shrink:0;margin:-2px -4px 0 0;">＋</button>
+        </div>
+        <div class="skills-card-count" style="color:${badge.color};">${n} person${n!==1?'s':''} · ${badge.label}</div>
+        <div class="skills-avatars">${n > 0 ? displayAvatars : '<span style="font-size:11px;color:var(--red);">Nobody yet</span>'}</div>
+      </div>`;
+    }).join('');
+    return `<div class="skills-section-title">${cat.label}</div><div class="skills-card-grid">${cards}</div>`;
+  }).join('');
+
+  const visibleCount = ALL_25_SKILLS.filter(skillVisible).length;
+  container.innerHTML = `
+    <div class="block" style="padding:16px 18px;">
+      <div style="font-size:12px;font-weight:500;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Coverage overview — ${visibleCount} skill${visibleCount!==1?'s':''}</div>
+      ${gapRows || '<div class="empty-state">No skills match this filter</div>'}
+    </div>
+    ${cardSections || '<div class="empty-state" style="padding:24px;">No skills match this filter</div>'}`;
+}
+
+function setSkillsFilter(f) {
+  skillsFilter = f;
+  renderSkills();
+}
+
+function updateSkillsPreview() {
+  const checked = [...document.querySelectorAll('#skills-picker input[type=checkbox]:checked')].map(cb => cb.value);
+  const preview = document.getElementById('skills-selected-preview');
+  if(preview) preview.textContent = checked.length ? checked.length + ' skill' + (checked.length!==1?'s':'') + ' selected: ' + checked.join(', ') : 'No skills selected';
+}
+
+let assigningSkill = null;
+
+function openSkillAssign(skill) {
+  assigningSkill = skill;
+  const cat = SKILL_CATEGORIES.find(c => c.skills.includes(skill));
+  document.getElementById('modal-skill-assign-title').textContent = skill;
+  document.getElementById('modal-skill-assign-desc').textContent = cat ? cat.label : '';
+
+  const saSearch = document.getElementById('skill-assign-search');
+  if(saSearch) saSearch.value = '';
+  const list = document.getElementById('skill-assign-list');
+  list.innerHTML = db.talents.map(t => {
+    const hasSkill = (t.skills||'').split(',').map(s=>s.trim()).includes(skill);
+    const initials = (t.firstname[0]||'') + (t.lastname[0]||'');
+    return `<label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:0.5px solid var(--border);cursor:pointer;" onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background=''">
+      <input type="checkbox" value="${t.id}" ${hasSkill?'checked':''} style="accent-color:var(--accent);width:14px;height:14px;flex-shrink:0;cursor:pointer;">
+      <span style="width:28px;height:28px;border-radius:50%;background:#E6F1FB;color:#0C447C;font-size:10px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${initials}</span>
+      <span style="font-size:13px;flex:1;">${t.firstname} ${t.lastname}</span>
+      <span style="font-size:11px;color:var(--text-3);">${t.role||''}</span>
+    </label>`;
+  }).join('');
+
+  openModal('modal-skill-assign');
+}
+
+function saveSkillAssign() {
+  if(!assigningSkill) return;
+  const checked = new Set([...document.querySelectorAll('#skill-assign-list input[type=checkbox]:checked')].map(cb => cb.value));
+  db.talents.forEach(t => {
+    const current = (t.skills||'').split(',').map(s=>s.trim()).filter(Boolean);
+    const hasIt = current.includes(assigningSkill);
+    const shouldHave = checked.has(t.id);
+    if(shouldHave && !hasIt) {
+      current.push(assigningSkill);
+      t.skills = current.join(', ');
+    } else if(!shouldHave && hasIt) {
+      t.skills = current.filter(s => s !== assigningSkill).join(', ');
+    }
+  });
+  saveData();
+  renderAll();
+  closeModal('modal-skill-assign');
+  toast('Skill updated ✓');
+}
+
+const DELIVERABLE_CATEGORIES = [
+  { label: 'Website & Platform Builds', items: ['Wireframes','Desktop & mobile UI designs','Motion design','Hero banners','Decision trees / personalization logic','Media carousels','Rich text blocks','Calendars','Newsletter signups','Content modeling','CI/CD pipeline setup','WCAG 2.1 accessibility implementation','Google Analytics dashboards','Cookie consent management'] },
+  { label: 'Strategy, Branding & Discovery', items: ['Strategic domain research','Competitor analysis','User testing plans','Research findings decks','Sitemaps','UX prototypes','Copy matrices','MLP outlines','Brand facts','Concept rationale','Storytelling for sales decks','Pitch decks'] },
+  { label: 'Specialized Tech (AI & Web3)', items: ['AI strategic partnership demo showcases','Technical design documents (TDD)','AI-generated mood boards','AI campaign key visual mockups','Lifestyle photography mockups'] },
+  { label: 'Campaigns & Event Activations', items: ['Microsites','Landing pages','UX/UI for promotional emails','Custom Poster Generators'] },
+  { label: 'Continuous Optimization & Support', items: ['CX Roadmaps','Platform governance documentation','Technical improvements','Content-only drops','Web3 engineering scope addendums'] },
+];
+
+function buildDeliverablePicker(selected) {
+  const picker = document.getElementById('deliverable-picker');
+  picker.innerHTML = DELIVERABLE_CATEGORIES.map(cat => `
+    <div class="deliverable-picker-cat">${cat.label}</div>
+    ${cat.items.map(item => `
+      <label class="deliverable-picker-item">
+        <input type="checkbox" value="${item}" ${selected.includes(item)?'checked':''} onchange="updateDeliverablePreview()">
+        ${item}
+      </label>`).join('')}
+  `).join('');
+  updateDeliverablePreview();
+}
+
+function updateDeliverablePreview() {
+  const checked = [...document.querySelectorAll('#deliverable-picker input[type=checkbox]:checked')].map(cb=>cb.value);
+  const preview = document.getElementById('deliverable-preview');
+  if(preview) preview.textContent = checked.length ? checked.length+' selected: '+checked.join(', ') : 'None selected';
+}
+
+function filterDeliverablePicker(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.deliverable-picker-item').forEach(item => {
+    item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+  document.querySelectorAll('.deliverable-picker-cat').forEach(cat => {
+    let next = cat.nextElementSibling;
+    let anyVisible = false;
+    while(next && !next.classList.contains('deliverable-picker-cat')) {
+      if(next.style.display !== 'none') anyVisible = true;
+      next = next.nextElementSibling;
+    }
+    cat.style.display = anyVisible ? '' : 'none';
+  });
+}
+
+function toggleCoverageNote(val) {
+  const note = document.getElementById('coverage-note');
+  if(note) note.style.display = val === 'coverage' ? 'block' : 'none';
+}
+
+function filterTalentPicker(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('#talent-picker .talent-option').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function filterSkillsPicker(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('#skills-picker .skills-picker-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = text.includes(q) ? '' : 'none';
+  });
+  document.querySelectorAll('#skills-picker .skills-picker-cat').forEach(cat => {
+    // Hide category label if all its items are hidden
+    let next = cat.nextElementSibling;
+    let anyVisible = false;
+    while(next && !next.classList.contains('skills-picker-cat')) {
+      if(next.style.display !== 'none') anyVisible = true;
+      next = next.nextElementSibling;
+    }
+    cat.style.display = anyVisible ? '' : 'none';
+  });
+}
+
+function filterSkillAssign(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('#skill-assign-list label').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function filterTimeoffPerson(query) {
+  const q = query.toLowerCase();
+  const dropdown = document.getElementById('to-person-dropdown');
+  const hidden = document.getElementById('to-person');
+  const allNames = db.talents.map(t => t.firstname + ' ' + t.lastname).sort();
+  const matches = allNames.filter(n => n.toLowerCase().includes(q));
+  if(!query || !matches.length) { dropdown.style.display = 'none'; return; }
+  dropdown.style.display = 'block';
+  dropdown.innerHTML = matches.map(name =>
+    `<div style="padding:8px 12px;font-size:13px;cursor:pointer;border-bottom:0.5px solid var(--border);" onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background=''" onclick="selectTimeoffPerson('${name.replace(/'/g,"\\'")}')"> ${name}</div>`
+  ).join('');
+}
+
+function selectTimeoffPerson(name) {
+  document.getElementById('to-person-search').value = name;
+  document.getElementById('to-person').value = name;
+  document.getElementById('to-person-dropdown').style.display = 'none';
+}
+
+// ── TIME OFF ──
+let editingTimeoffId = null;
+
+function renderTimeoff() {
+  const container = document.getElementById('timeoff-list');
+  if(!container) return;
+  if(!db.timeoff || !db.timeoff.length) {
+    container.innerHTML = '<div class="timeoff-list"><div class="empty-state">No time off entries yet</div></div>';
+    return;
+  }
+
+  // ── TIMELINE ──
+  // Build month columns from all time off dates
+  const allDates = [];
+  db.timeoff.forEach(e => { allDates.push(new Date(e.start)); allDates.push(new Date(e.end)); });
+  const min = new Date(Math.min(...allDates));
+  const max = new Date(Math.max(...allDates));
+  const months = [];
+  let cur = new Date(min.getFullYear(), min.getMonth(), 1);
+  while(cur <= new Date(max.getFullYear(), max.getMonth(), 1)) {
+    months.push(new Date(cur));
+    cur = new Date(cur.getFullYear(), cur.getMonth()+1, 1);
+  }
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function mColEnd(m) { return new Date(m.getFullYear(), m.getMonth()+1, 0); }
+  function mOverlaps(startStr, endStr, m) {
+    if(!startStr||!endStr) return false;
+    return new Date(startStr) <= mColEnd(m) && new Date(endStr) >= m;
+  }
+
+  // Group entries by person, sorted alphabetically
+  const byPerson = {};
+  db.timeoff.forEach(e => { if(!byPerson[e.person]) byPerson[e.person] = []; byPerson[e.person].push(e); });
+  const people = Object.keys(byPerson).sort();
+
+  const headerRow = '<tr><th class="g-label" style="font-size:11px;">Person</th>' +
+    months.map(m => `<th>${monthNames[m.getMonth()]} ${m.getFullYear()}</th>`).join('') + '</tr>';
+
+  const bodyRows = people.map(person => {
+    const entries = byPerson[person];
+    const cells = months.map(m => {
+      const offEntries = entries.filter(e => mOverlaps(e.start, e.end, m));
+      if(offEntries.length) {
+        const tip = offEntries.map(e => `${fmtDate(e.start)}→${fmtDate(e.end)}`).join(', ');
+        return `<td title="${tip}"><div style="height:18px;border-radius:3px;margin:7px 3px;background:var(--text-3);opacity:0.4;"></div></td>`;
+      }
+      return '<td></td>';
+    }).join('');
+    return `<tr><td class="g-label" style="font-size:12px;cursor:default;">${person}</td>${cells}</tr>`;
+  }).join('');
+
+  const timeline = `
+    <div class="gantt-wrap" style="margin-bottom:20px;">
+      <table class="gantt-table"><thead>${headerRow}</thead><tbody>${bodyRows}</tbody></table>
+    </div>`;
+
+  // ── LIST ──
+  const sorted = [...db.timeoff].sort((a,b) => a.person < b.person ? -1 : a.person > b.person ? 1 : a.start < b.start ? -1 : 1);
+  const list = '<div class="timeoff-list">' + sorted.map(entry => `
+    <div class="timeoff-row">
+      <span style="font-size:16px;">🏖</span>
+      <div class="timeoff-name">${entry.person}</div>
+      <div class="timeoff-dates">${fmtDate(entry.start)} → ${fmtDate(entry.end)}</div>
+      <button class="btn-icon" onclick="openTimeoffModal('${entry.id}')" title="Edit">✎</button>
+    </div>`).join('') + '</div>';
+
+  container.innerHTML = timeline + list;
+}
+
+function openTimeoffModal(id) {
+  editingTimeoffId = id || null;
+  if(!db.timeoff) db.timeoff = [];
+  const entry = id ? db.timeoff.find(x => x.id === id) : null;
+  document.getElementById('modal-timeoff-title').textContent = entry ? 'Edit time off' : 'Add time off';
+  document.getElementById('to-person-search').value = entry?.person || '';
+  document.getElementById('to-person').value = entry?.person || '';
+  document.getElementById('to-person-dropdown').style.display = 'none';
+  document.getElementById('to-start').value = entry?.start || '';
+  document.getElementById('to-end').value = entry?.end || '';
+  document.getElementById('to-delete-btn').style.display = entry ? 'inline-block' : 'none';
+  openModal('modal-timeoff');
+}
+
+function saveTimeoff() {
+  if(!db.timeoff) db.timeoff = [];
+  const person = document.getElementById('to-person').value;
+  const start = document.getElementById('to-start').value;
+  const end = document.getElementById('to-end').value;
+  if(!start || !end) { toast('Start and end date required'); return; }
+  if(editingTimeoffId) {
+    Object.assign(db.timeoff.find(x => x.id === editingTimeoffId), {person, start, end});
+  } else {
+    db.timeoff.push({id: uid(), person, start, end});
+  }
+  saveData(); renderAll(); closeModal('modal-timeoff'); toast('Saved ✓');
+}
+
+function deleteTimeoff() {
+  if(!confirm('Delete this time off entry?')) return;
+  db.timeoff = db.timeoff.filter(x => x.id !== editingTimeoffId);
+  saveData(); renderAll(); closeModal('modal-timeoff'); toast('Deleted');
+}
+
+// ── GANTT ──
+let ganttZoom = 'weeks';
+let ganttExpanded = {};
+
+function setGanttZoom(z) {
+  ganttZoom = z;
+  document.getElementById('zoom-btn-weeks').classList.toggle('active', z === 'weeks');
+  document.getElementById('zoom-btn-months').classList.toggle('active', z === 'months');
+  renderPlanning();
+}
+
+function toggleGanttProject(pid) {
+  ganttExpanded[pid] = !ganttExpanded[pid];
+  renderPlanning();
+}
+
+function getWeekStart(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  d.setDate(d.getDate() - day + (day === 0 ? -6 : 1));
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function buildCols() {
+  const allDates = [];
+  db.projects.forEach(p => { if(p.start) allDates.push(new Date(p.start)); if(p.end) allDates.push(new Date(p.end)); });
+  db.roles.forEach(r => { if(r.start) allDates.push(new Date(r.start)); if(r.end) allDates.push(new Date(r.end)); });
+  if(!allDates.length) return [];
+  const min = new Date(Math.min(...allDates));
+  const max = new Date(Math.max(...allDates));
+  const cols = [];
+  if(ganttZoom === 'weeks') {
+    let cur = getWeekStart(min);
+    while(cur <= max) { cols.push(new Date(cur)); cur = new Date(cur); cur.setDate(cur.getDate()+7); }
+  } else {
+    let cur = new Date(min.getFullYear(), min.getMonth(), 1);
+    const end = new Date(max.getFullYear(), max.getMonth(), 1);
+    while(cur <= end) { cols.push(new Date(cur)); cur = new Date(cur.getFullYear(), cur.getMonth()+1, 1); }
+  }
+  return cols;
+}
+
+function colEnd(col) {
+  if(ganttZoom === 'weeks') { const d = new Date(col); d.setDate(d.getDate()+6); return d; }
+  return new Date(col.getFullYear(), col.getMonth()+1, 0);
+}
+
+function overlaps(startStr, endStr, col) {
+  if(!startStr || !endStr) return false;
+  return new Date(startStr) <= colEnd(col) && new Date(endStr) >= col;
+}
+
+function colLabel(col) {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  if(ganttZoom === 'weeks') return months[col.getMonth()] + ' ' + String(col.getDate()).padStart(2,'0');
+  return months[col.getMonth()] + ' ' + col.getFullYear();
+}
+
+function statusBarColor(s) {
+  return {open:'var(--red)',discussion:'var(--orange)',offer:'var(--accent)',confirmed:'var(--green)'}[s] || 'var(--text-3)';
+}
+
+function renderPlanning() {
+  const container = document.getElementById('gantt-container');
+  if(!container) return;
+  if(!db.projects.length) { container.innerHTML='<div class="empty-state">No projects yet</div>'; return; }
+  const cols = buildCols();
+  if(!cols.length) { container.innerHTML='<div class="empty-state">Add dates to projects and roles to see the timeline</div>'; return; }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayIdx = cols.findIndex(c => today >= c && today <= colEnd(c));
+
+  // Month header row (weeks mode only)
+  let headerHTML = '';
+  if(ganttZoom === 'weeks') {
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    let spans = [], curM = -1, curN = 0;
+    cols.forEach(c => {
+      if(c.getMonth() !== curM) { if(curN) spans.push({m:curM,n:curN}); curM=c.getMonth(); curN=1; }
+      else curN++;
+    });
+    if(curN) spans.push({m:curM,n:curN});
+    headerHTML += '<tr><th class="g-label"></th>' + spans.map(s=>`<th colspan="${s.n}">${monthNames[s.m]}</th>`).join('') + '</tr>';
+  }
+
+  // Column header row
+  headerHTML += '<tr><th class="g-label">Project / Role</th>' +
+    cols.map((c,i) => `<th style="${i===todayIdx?'background:var(--accent-light);color:var(--accent);font-weight:600;':''}">${colLabel(c)}</th>`).join('') + '</tr>';
+
+  // Time off flag row
+  const timeoff = db.timeoff || [];
+  const timeoffRow = '<tr><td class="g-label" style="font-size:11px;color:var(--text-3);">🏖 Time off</td>' +
+    cols.map((c,i) => {
+      const offPeople = timeoff.filter(e => overlaps(e.start, e.end, c)).map(e => e.person);
+      const bg = i===todayIdx ? 'background:var(--accent-light);' : '';
+      if(offPeople.length) {
+        const tip = offPeople.join(', ');
+        return `<td style="${bg}text-align:center;" title="${tip}"><span style="font-size:13px;cursor:default;" title="${tip}">🏖</span></td>`;
+      }
+      return `<td style="${bg}"></td>`;
+    }).join('') + '</tr>';
+
+  // Rows
+  const bodyHTML = db.projects.map(p => {
+    const pRoles = db.roles.filter(r => r.projectId === p.id);
+    const isExpanded = !!ganttExpanded[p.id];
+    const chevron = pRoles.length ? `<span style="font-size:9px;margin-right:6px;display:inline-block;transition:transform 0.15s;transform:rotate(${isExpanded?'90':'0'}deg);">▶</span>` : '<span style="width:15px;display:inline-block;"></span>';
+
+    const projCells = cols.map((c,i) => {
+      const inRange = overlaps(p.start, p.end, c);
+      const bg = i===todayIdx ? 'background:var(--accent-light);' : '';
+      return `<td style="${bg}">${inRange ? `<div style="height:12px;border-radius:2px;margin:11px 3px;background:var(--border-md);opacity:0.6;"></div>` : ''}</td>`;
+    }).join('');
+
+    const projRow = `<tr class="g-proj"><td class="g-label" onclick="toggleGanttProject('${p.id}')">${chevron}${p.name}<span style="font-size:11px;color:var(--text-3);font-weight:400;margin-left:6px;">${p.client||''}</span></td>${projCells}</tr>`;
+
+    if(!isExpanded || !pRoles.length) return projRow;
+
+    const roleRows = pRoles.map(r => {
+      const color = statusBarColor(r.status);
+      // Use role dates if set, else fall back to project dates
+      const start = r.start || p.start;
+      const end = r.end || p.end;
+      const usingProjDates = !r.start && !r.end;
+      const cells = cols.map((c,i) => {
+        const active = overlaps(start, end, c);
+        const bg = i===todayIdx ? 'background:var(--accent-light);' : '';
+        if (active) {
+          // Check if any assigned talent has time off this column
+          const talentNames = r.talents || [];
+          const hasTimeoff = talentNames.some(name =>
+            (db.timeoff || []).some(e => e.person === name && overlaps(e.start, e.end, c))
+          );
+          if (hasTimeoff) {
+            return `<td style="${bg}" title="${talentNames.join(', ')} on leave"><div class="g-bar-wrap"><div class="g-bar" style="background:${color};opacity:0.85;"></div><div class="g-bar-stripe"></div></div></td>`;
+          }
+          return `<td style="${bg}"><div class="g-bar" style="background:${color};opacity:0.85;"></div></td>`;
+        }
+        return `<td style="${bg}"></td>`;
+      }).join('');
+      const assigned = r.talents && r.talents.length ? `<span style="color:var(--text-3);margin-left:4px;">· ${r.talents.join(', ')}</span>` : '';
+      const proj = usingProjDates ? `<span style="font-size:10px;color:var(--text-3);margin-left:4px;" title="Using project dates">~proj</span>` : '';
+      return `<tr class="g-role"><td class="g-label">${r.name}${assigned}${proj}</td>${cells}</tr>`;
+    }).join('');
+
+    return projRow + roleRows;
+  }).join('');
+
+  container.innerHTML = `<table class="gantt-table"><thead>${headerHTML}</thead><tbody>${timeoffRow}${bodyHTML}</tbody></table>`;
+}
+
+
+
+// close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});
+});
+
+loadData();
+// set all talents to busy (they were all 'available' as placeholder)
+db.talents.forEach(t => { if(t.avail === 'available') t.avail = 'busy'; });
+saveData();
+renderAll();
+</script>
+</body>
+</html>
